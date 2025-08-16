@@ -1,0 +1,1 @@
+export { EnhancedHeroSection } from './EnhancedHeroSection';
