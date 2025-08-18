@@ -10,10 +10,10 @@ import {
   LoadingState,
   ErrorState,
   NoProjectsState,
-  ProjectsHeader,
 } from '@/modules/landing';
 import { projectsData, ProjectData } from '@/data/projects';
 import { HeroSection } from '@/components';
+import { StaticHeader } from '@/components/layout';
 
 const categories = [
   'все',
@@ -116,7 +116,7 @@ export default function ProjectsPage() {
     <div className="min-h-screen bg-[#232323] relative overflow-hidden">
       <BackgroundElements />
 
-      <ProjectsHeader />
+      <StaticHeader />
       <HeroSection />
 
       <SearchBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />

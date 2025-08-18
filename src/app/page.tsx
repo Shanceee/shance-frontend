@@ -7,6 +7,7 @@ import {
   ScrollToTopSection,
   AnimatedTagsSection,
 } from '@/components/landing';
+import { ProcessSteps } from '@/components/ui';
 
 // Эта страница будет статически сгенерирована (SSG)
 export const dynamic = 'force-static';
@@ -17,6 +18,7 @@ export default function HomePage() {
       <AnimatedTagsSection />
       <HeaderSection />
       <HeroSection />
+      <ProcessSteps />
       <FeaturesSection />
       <FAQSection />
       <FooterSection />

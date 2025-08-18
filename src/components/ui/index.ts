@@ -1,6 +1,4 @@
 // Экспорт базовых UI компонентов
-export { Button } from './button';
-export { Input } from './input';
 export { Notifications } from './notifications';
 export { BackgroundElements } from './BackgroundElements';
 export { ScrollToTop } from './ScrollToTop';
@@ -10,3 +8,4 @@ export { ProjectCard } from './ProjectCard';
 export { InfoCard } from './InfoCard';
 export { AnimatedHashtags } from './AnimatedHashtags';
 export { SectionHeader } from './SectionHeader';
+export { ProcessSteps } from './ProcessSteps';
