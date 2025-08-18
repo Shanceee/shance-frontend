@@ -9,3 +9,4 @@ export { InfoCard } from './InfoCard';
 export { AnimatedHashtags } from './AnimatedHashtags';
 export { SectionHeader } from './SectionHeader';
 export { ProcessSteps } from './ProcessSteps';
+export { AboutSection } from './AboutSection';
