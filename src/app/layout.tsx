@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+
 import './globals.css';
 
+const inter = Inter({ subsets: ['latin'] });
+
 export const metadata: Metadata = {
-  title: 'Shance - Твой путь в IT-стартапе',
+  title: 'Shance - Стань частью стартапа',
   description:
     'Твой путь в IT-стартапе — просто и быстро. Стань частью стартапа, найди свой проект и расти профессионально.',
   keywords: 'стартап, IT, проекты, команда, разработка, карьера',
@@ -18,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

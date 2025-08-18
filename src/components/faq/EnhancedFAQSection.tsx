@@ -28,7 +28,7 @@ export function EnhancedFAQSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 px-5 relative">
+    <section id="faq" ref={sectionRef} className="py-20 px-5 relative">
       {/* Фоновые элементы */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-0 w-96 h-96 bg-green-500/20 rounded-full blur-[400px] animate-pulse"></div>

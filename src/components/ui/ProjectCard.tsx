@@ -14,9 +14,17 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
   if (!project) {
     return (
       <div
-        className={`relative group transition-all duration-300 ${className} rounded-5xl w-full`}
+        className={`relative group transition-all duration-300 ${className} w-full`}
       >
-        <div className="bg-gradient-to-br from-[#232323] to-[#2f835e] backdrop-blur-sm border border-white/30 rounded-5xl p-4 h-full relative overflow-hidden shadow-lg">
+        <div
+          className="backdrop-blur-[14.34px] rounded-[20px] p-[14.34px] h-full relative overflow-hidden flex flex-col"
+          style={{
+            background:
+              'linear-gradient(229deg, rgba(35, 35, 35, 1) 0%, rgba(47, 131, 94, 1) 100%)',
+            boxShadow:
+              '0px 2.87px 7.17px 0px rgba(0, 0, 0, 0.25), inset 0px 2.65px 5.31px 0px rgba(255, 255, 255, 0.05), 0 0 0 0.66px rgba(179, 179, 179, 0.3)',
+          }}
+        >
           <div className="flex items-center justify-center h-full">
             <p className="text-white/60 font-montserrat">Проект не найден</p>
           </div>
@@ -31,7 +39,15 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
       <div
         className={`relative group transition-all duration-300 ${className} w-full`}
       >
-        <div className="bg-gradient-to-br from-[#232323] to-[#2f835e] backdrop-blur-sm border border-white/30 rounded-5xl p-4 h-full relative overflow-hidden shadow-lg">
+        <div
+          className="backdrop-blur-[14.34px] rounded-[20px] p-[14.34px] h-full relative overflow-hidden flex flex-col"
+          style={{
+            background:
+              'linear-gradient(229deg, rgba(35, 35, 35, 1) 0%, rgba(47, 131, 94, 1) 100%)',
+            boxShadow:
+              '0px 2.87px 7.17px 0px rgba(0, 0, 0, 0.25), inset 0px 2.65px 5.31px 0px rgba(255, 255, 255, 0.05), 0 0 0 0.66px rgba(179, 179, 179, 0.3)',
+          }}
+        >
           <div className="flex items-center justify-center h-full">
             <p className="text-white/60 font-montserrat">
               Неверная структура проекта
@@ -47,26 +63,29 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
       className={`relative group transition-all duration-300 hover:scale-105 ${className} w-full`}
     >
       <div
-        className="bg-gradient-to-br from-[#232323] to-[#2f835e] backdrop-blur-[14px] border rounded-[20px] p-3 sm:p-4 relative overflow-hidden shadow-lg h-full flex flex-col"
+        className="backdrop-blur-[14.34px] rounded-[20px] p-[14.34px] relative overflow-hidden flex flex-col h-full"
         style={{
-          borderImage:
-            'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%)',
+          background:
+            'linear-gradient(229deg, rgba(35, 35, 35, 1) 0%, rgba(47, 131, 94, 1) 100%)',
           boxShadow:
-            '0px 2.87px 7.17px 0px rgba(0, 0, 0, 0.25), inset 0px 2.65px 5.31px 0px rgba(255, 255, 255, 0.05)',
+            '0px 2.87px 7.17px 0px rgba(0, 0, 0, 0.25), inset 0px 2.65px 5.31px 0px rgba(255, 255, 255, 0.05), 0 0 0 0.66px rgba(179, 179, 179, 0.3)',
         }}
       >
         {/* Header with title and date */}
-        <div className="flex flex-col gap-1 mb-3 sm:mb-4 flex-shrink-0">
-          <h3 className="text-sm sm:text-base font-unbounded font-medium text-white leading-tight line-clamp-2">
+        <div className="flex flex-col gap-[4.3px] mb-[14.34px] flex-shrink-0">
+          <h3
+            className="text-base font-unbounded font-medium text-white leading-[1.24] cursor-pointer truncate"
+            title={project.title}
+          >
             {project.title}
           </h3>
-          <p className="text-xs font-miracode text-white/80 leading-tight">
+          <p className="text-[8.6px] font-miracode text-white/80 leading-[1.51]">
             {project.date}
           </p>
         </div>
 
         {/* Image container */}
-        <div className="relative w-full h-32 sm:h-40 lg:h-48 rounded-xl sm:rounded-2xl overflow-hidden mb-3 sm:mb-4 flex-shrink-0">
+        <div className="relative w-full h-[195px] rounded-[21.5px] overflow-hidden mb-[14.34px] flex-shrink-0">
           <Image
             src={project.imageSrc}
             alt={project.imageAlt}
@@ -82,7 +101,7 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
           {/* Prototype badge if applicable */}
           {project.isPrototype && (
             <div
-              className="absolute top-2 sm:top-3 left-2 sm:left-3 px-3 sm:px-4 py-2 bg-transparent backdrop-blur-sm rounded-lg flex items-center justify-center"
+              className="absolute top-[7.17px] left-[7.17px] px-[7.17px] py-[7.17px] bg-transparent backdrop-blur-sm rounded-lg flex items-center justify-center"
               style={{
                 border: '2px solid',
                 borderImage:
@@ -96,9 +115,9 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
           )}
 
           {/* Description overlay */}
-          <div className="absolute bottom-2 left-2 right-2 p-2">
-            <div className="bg-black/20 backdrop-blur-sm rounded-lg p-2">
-              <p className="text-xs sm:text-sm font-montserrat text-white leading-tight line-clamp-3">
+          <div className="absolute bottom-[7.17px] left-[5.74px] right-[5.74px] p-[7.17px]">
+            <div className="bg-black/20 backdrop-blur-sm rounded-lg p-[7.17px]">
+              <p className="text-[12.44px] font-montserrat text-white leading-[1.22] line-clamp-3">
                 {project.description}
               </p>
             </div>
@@ -106,33 +125,39 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
         </div>
 
         {/* Footer with tags and like button */}
-        <div className="flex items-center justify-between mt-auto flex-shrink-0">
+        <div className="flex items-center justify-between mt-auto flex-shrink-0 gap-[35.85px]">
           {/* Tags */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap flex-1 min-w-0">
+          <div className="flex items-center gap-[18.64px] flex-wrap flex-1 min-w-0">
             {project.tags &&
-              project.tags.slice(0, 3).map((tag, index) => (
+              project.tags.slice(0, 5).map((tag, index) => (
                 <span
                   key={index}
-                  className="text-xs font-miracode text-white/70 leading-tight whitespace-nowrap"
+                  className="text-[8.6px] font-miracode text-white/70 leading-[1.51] whitespace-nowrap"
                 >
                   #{tag}
                 </span>
               ))}
-            {project.tags && project.tags.length > 3 && (
-              <span className="text-xs font-miracode text-white/50 leading-tight">
-                +{project.tags.length - 3}
+            {project.tags && project.tags.length > 5 && (
+              <span className="text-[8.6px] font-miracode text-white/50 leading-[1.51]">
+                +{project.tags.length - 5}
               </span>
             )}
           </div>
 
           {/* Like button */}
-          <button className="w-8 h-8 sm:w-10 sm:h-10 bg-[#00A851] backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-[#008f45] transition-colors flex-shrink-0 ml-2">
+          <button
+            className="w-[38px] h-[38px] bg-[#00A851] backdrop-blur-[14.34px] rounded-[19px] flex items-center justify-center hover:bg-[#008f45] transition-colors flex-shrink-0"
+            style={{
+              boxShadow:
+                '0px 2.87px 7.17px 0px rgba(0, 0, 0, 0.25), inset 0px 2.65px 5.31px 0px rgba(255, 255, 255, 0.05)',
+            }}
+          >
             <Image
               src="/images/arrow.svg"
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               alt="Arrow icon"
-              className="w-4 h-4 sm:w-5 sm:h-5"
+              className="w-[18px] h-[18px]"
             />
           </button>
         </div>

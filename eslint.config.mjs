@@ -25,8 +25,8 @@ const eslintConfig = [
       'postcss.config.mjs',
       'tailwind.config.js',
       'jest.config.js',
-      'jest.setup.js'
-    ]
+      'jest.setup.js',
+    ],
   },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
@@ -47,7 +47,10 @@ const eslintConfig = [
       // TypeScript правила
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
 
       // React правила
       'react-hooks/exhaustive-deps': 'warn',

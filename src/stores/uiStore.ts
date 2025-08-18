@@ -26,30 +26,31 @@ export interface UIState {
   searchQuery: string;
   searchResults: Record<string, unknown>[];
 
-  setTheme: (theme: 'light' | 'dark' | 'system') => void;
+  setTheme: (_theme: 'light' | 'dark' | 'system') => void;
   toggleSidebar: () => void;
 
   openModal: (
-    id: string,
-    component: React.ComponentType<Record<string, unknown>>,
-    props?: Record<string, unknown>
+    _id: string,
+    _component: React.ComponentType<Record<string, unknown>>,
+    _props?: Record<string, unknown>
   ) => void;
 
-  closeModal: (id: string) => void;
+  closeModal: (_id: string) => void;
 
   addNotification: (
-    notification: Omit<Notification, 'id' | 'createdAt'>
+    _notification: Omit<Notification, 'id' | 'createdAt'>
   ) => void;
 
-  removeNotification: (id: string) => void;
+  removeNotification: (_id: string) => void;
+  clearNotifications: () => void;
 
-  setLoading: (loading: boolean) => void;
+  setLoading: (_loading: boolean) => void;
 
-  setError: (error: string | null) => void;
+  setError: (_error: string | null) => void;
 
-  setSearchQuery: (query: string) => void;
+  setSearchQuery: (_query: string) => void;
 
-  setSearchResults: (results: Record<string, unknown>[]) => void;
+  setSearchResults: (_results: Record<string, unknown>[]) => void;
   clearSearch: () => void;
 }
 
@@ -103,6 +104,8 @@ export const useUIStore = create<UIState>()(
             notification => notification.id !== id
           ),
         })),
+
+      clearNotifications: () => set({ notifications: [] }),
 
       setLoading: loading => set({ loading }),
 

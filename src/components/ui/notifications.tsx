@@ -76,15 +76,15 @@ const NotificationItem: React.FC<{
   title: string;
   message: string;
   onRemove: (id: string) => void;
-}> = ({ id, type, title, message, onRemove }) => {
+}> = ({ id: notificationId, type, title, message, onRemove }) => {
   useEffect(() => {
     // Автоматически удаляем уведомление через 5 секунд
     const timer = setTimeout(() => {
-      onRemove(id);
+      onRemove(notificationId);
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [id, onRemove]);
+  }, [notificationId, onRemove]);
 
   return (
     <div
@@ -111,7 +111,7 @@ const NotificationItem: React.FC<{
       </div>
 
       <button
-        onClick={() => onRemove(id)}
+        onClick={() => onRemove(notificationId)}
         className="flex-shrink-0 ml-3 text-gray-400 hover:text-gray-600 transition-colors"
         aria-label="Закрыть уведомление"
       >

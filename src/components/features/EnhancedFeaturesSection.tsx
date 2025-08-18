@@ -2,14 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { ProjectCard } from '@/components/ui/ProjectCard';
 import { InfoCard } from '@/components/ui/InfoCard';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { projectsData, infoCardsData } from '@/data/projects';
+import { infoCardsData } from '@/data/projects';
 
 export function EnhancedFeaturesSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const [activeProject, setActiveProject] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -27,14 +25,6 @@ export function EnhancedFeaturesSection() {
     }
 
     return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveProject(prev => (prev + 1) % projectsData.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
   }, []);
 
   return (

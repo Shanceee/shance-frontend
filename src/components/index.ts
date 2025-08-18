@@ -18,6 +18,3 @@ export * from './footer';
 
 // Providers
 export * from './providers';
-
-// Landing Components
-export * from './landing';

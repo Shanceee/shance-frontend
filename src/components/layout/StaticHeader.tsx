@@ -3,14 +3,50 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+import { useSmoothScroll } from '@/hooks';
 
 export function StaticHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+  const { scrollToElementWithOffset } = useSmoothScroll();
+
+  const handleNavigation = (section: string) => {
+    setIsMenuOpen(false);
+
+    // Если мы не на главной странице, переходим на неё
+    if (window.location.pathname !== '/') {
+      router.push('/');
+      // Ждем перехода и затем скроллим
+      setTimeout(() => {
+        scrollToElementWithOffset(section, 100);
+      }, 100);
+    } else {
+      // Если уже на главной, просто скроллим
+      scrollToElementWithOffset(section, 100);
+    }
+  };
 
   const navItems = [
-    { href: '/projects', text: 'Проекты' },
-    { href: '/about', text: 'О нас' },
-    { href: '/faq', text: 'FAQ' },
+    {
+      id: 'projects',
+      href: '/projects',
+      text: 'Проекты',
+      action: () => router.push('/projects'),
+    },
+    {
+      id: 'about',
+      href: '#about',
+      text: 'О нас',
+      action: () => handleNavigation('about'),
+    },
+    {
+      id: 'faq',
+      href: '#faq',
+      text: 'FAQ',
+      action: () => handleNavigation('faq'),
+    },
   ];
 
   const toggleMenu = () => {
@@ -42,14 +78,14 @@ export function StaticHeader() {
           {/* Навигация для десктопа */}
           <nav className="hidden md:flex items-center space-x-8 transition-all duration-500 opacity-100 translate-y-0">
             {navItems.map((item, index) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-white/80 hover:text-white transition-all duration-300 hover:scale-105 opacity-100 translate-y-0 font-montserrat"
+              <button
+                key={item.id}
+                onClick={item.action}
+                className="text-white/80 hover:text-white transition-all duration-300 hover:scale-105 opacity-100 translate-y-0 font-montserrat bg-transparent border-none cursor-pointer"
                 style={{ transitionDelay: `${300 + index * 100}ms` }}
               >
                 {item.text}
-              </Link>
+              </button>
             ))}
           </nav>
 
@@ -96,14 +132,16 @@ export function StaticHeader() {
           <div className="md:hidden mt-4 py-4 border-t border-white/10">
             <nav className="space-y-4">
               {navItems.map(item => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="block text-white/80 hover:text-white transition-all duration-300 py-2 font-montserrat"
-                  onClick={() => setIsMenuOpen(false)}
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    item.action();
+                    setIsMenuOpen(false);
+                  }}
+                  className="block text-white/80 hover:text-white transition-all duration-300 py-2 font-montserrat bg-transparent border-none cursor-pointer text-left w-full"
                 >
                   {item.text}
-                </Link>
+                </button>
               ))}
             </nav>
           </div>

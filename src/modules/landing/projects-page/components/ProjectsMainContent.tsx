@@ -2,43 +2,37 @@
 
 import type { ProjectData } from '@/data/projects';
 
-import { CategoryTags } from './CategoryTags';
+import { SearchBar } from './SearchBar';
 import { ProjectsGrid } from './ProjectsGrid';
 import { LoadMoreButton } from './LoadMoreButton';
 
 interface ProjectsMainContentProps {
-  categories: string[];
-  selectedCategory: string;
-  onCategorySelect: (category: string) => void;
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
   filteredProjects: ProjectData[];
   onResetFilters: () => void;
 }
 
 export function ProjectsMainContent({
-  categories,
-  selectedCategory,
-  onCategorySelect,
+  searchQuery,
+  onSearchChange,
   filteredProjects,
   onResetFilters,
 }: ProjectsMainContentProps) {
   return (
     <main className="relative z-10 px-4 sm:px-6 lg:px-8 xl:px-10 pb-16 sm:pb-20">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto mb-20">
         {/* Page Title */}
-        <div className="mb-16">
-          <h1 className="text-4xl font-unbounded font-normal bg-gradient-to-t from-gray-600 to-gray-200 bg-clip-text">
-            Твои идеальные проекты
-          </h1>
+        <div className="mb-16 text-center">
+          <h2 className="text-4xl md:text-5xl font-unbounded font-normal leading-tight">
+            <span className="bg-gradient-to-t from-gray-400/30 to-white bg-clip-text text-transparent">
+              Новинки
+            </span>
+          </h2>
         </div>
 
-        {/* Category Tags */}
-        <div className="mb-8 sm:mb-12">
-          <CategoryTags
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onCategorySelect={onCategorySelect}
-          />
-        </div>
+        {/* Search Bar */}
+        <SearchBar searchQuery={searchQuery} onSearchChange={onSearchChange} />
 
         {/* Projects Grid */}
         <div className="mb-8 sm:mb-12">

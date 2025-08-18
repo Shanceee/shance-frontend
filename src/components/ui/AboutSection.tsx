@@ -48,7 +48,11 @@ export function AboutSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative py-20 px-5 overflow-hidden">
+    <section
+      id="about"
+      ref={sectionRef}
+      className="relative py-20 px-5 overflow-hidden"
+    >
       {/* Заголовок */}
       <div className="text-center mb-20">
         <h2

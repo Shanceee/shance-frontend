@@ -7,7 +7,13 @@ import Link from 'next/link';
 import { AnimatedHashtags } from '@/components/ui/AnimatedHashtags';
 import { hashtagsData } from '@/data/hashtags';
 
-export function EnhancedHeroSection() {
+interface EnhancedHeroSectionProps {
+  hideProjectsButton?: boolean;
+}
+
+export function EnhancedHeroSection({
+  hideProjectsButton = false,
+}: EnhancedHeroSectionProps) {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -71,13 +77,15 @@ export function EnhancedHeroSection() {
         {/* Анимированные хэштеги */}
         <AnimatedHashtags tags={hashtagsData} className="mb-16" />
 
-        {/* Кнопка CTA */}
-        <Link
-          href="/projects"
-          className="inline-block px-12 py-4 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white text-xl font-semibold hover:bg-white/30 transition-all duration-300 hover:scale-105 animate-bounce-slow font-montserrat"
-        >
-          к проектам
-        </Link>
+        {/* Кнопка CTA - показываем только если не скрыта */}
+        {!hideProjectsButton && (
+          <Link
+            href="/projects"
+            className="inline-block px-12 py-4 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white text-xl font-semibold hover:bg-white/30 transition-all duration-300 hover:scale-105 animate-bounce-slow font-montserrat"
+          >
+            к проектам
+          </Link>
+        )}
       </div>
     </section>
   );
