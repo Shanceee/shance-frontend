@@ -1,0 +1,42 @@
+﻿# Node & build artifacts
+node_modules
+.npm
+.next
+dist
+build
+coverage
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Git & IDE
+.git
+.gitignore
+.gitattributes
+.github
+.idea
+.vscode
+.husky
+
+# Tests / configs (не нужны в проде)
+__tests__/
+__mocks__/
+*.test.js
+*.test.ts
+*.test.tsx
+jest.config.*
+vitest.config.*
+
+# Docs / misc
+README.md
+*.md

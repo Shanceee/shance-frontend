@@ -1,11 +1,5 @@
 // Экспорт типов
-export type {
-  User,
-  LoginCredentials,
-  RegisterCredentials,
-  AuthState,
-  AuthContextType,
-} from './types';
+export type { User, LoginCredentials, RegisterCredentials } from './types';
 
 // Экспорт API
 export { authApi } from './api/authApi';

@@ -1,28 +1,33 @@
-import type { BaseEntity } from '@/types';
-
 export interface DashboardStats {
-  totalUsers: number;
-  activeUsers: number;
+  totalProjects: number;
+  activeProjects: number;
+  completedProjects: number;
   totalRevenue: number;
-  growthRate: number;
+  monthlyGrowth: number;
 }
 
 export interface ChartData {
-  label: string;
-  value: number;
-  color?: string;
+  labels: string[];
+  datasets: Array<{
+    label: string;
+    data: number[];
+    backgroundColor: string;
+    borderColor: string;
+  }>;
 }
 
-export interface RecentActivity extends BaseEntity {
-  type: 'login' | 'registration' | 'purchase' | 'update';
+export interface RecentActivity {
+  id: string;
+  type: 'project_created' | 'project_completed' | 'payment_received';
+  title: string;
   description: string;
-  userId: string;
-  metadata?: Record<string, unknown>;
+  timestamp: string;
+  amount?: number;
 }
 
 export interface DashboardState {
   stats: DashboardStats | null;
-  chartData: ChartData[];
+  chartData: ChartData | null;
   recentActivities: RecentActivity[];
   isLoading: boolean;
   error: string | null;

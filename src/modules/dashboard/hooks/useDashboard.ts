@@ -50,7 +50,11 @@ export const useDashboard = () => {
       setError(null);
 
       if (chartDataQuery.data?.success && chartDataQuery.data?.data) {
-        setChartData(chartDataQuery.data.data);
+        // If API returns array, take first element, otherwise use as is
+        const data = Array.isArray(chartDataQuery.data.data)
+          ? chartDataQuery.data.data[0]
+          : chartDataQuery.data.data;
+        setChartData(data);
       }
     } catch (error) {
       if (error instanceof Error) {
