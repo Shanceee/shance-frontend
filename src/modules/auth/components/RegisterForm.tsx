@@ -1,12 +1,11 @@
 'use client';
-
 import { useState } from 'react';
 
 import PhoneIcon from '@/assets/phone.svg';
 import LockIcon from '@/assets/lock.svg';
 import EyeIcon from '@/assets/eye.svg';
 
-export function LoginForm() {
+export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -54,7 +53,7 @@ export function LoginForm() {
       <div className="flex flex-col gap-3.5 items-center justify-center relative shrink-0">
         <button className="flex gap-2.5 h-[58px] items-center justify-center overflow-clip px-[52px] py-0 relative rounded-[12px] shrink-0 w-full max-w-[400px] bg-gradient-to-r from-[#4A90E2] to-[#357ABD] hover:from-[#357ABD] hover:to-[#2E6BA8] transition-all duration-300">
           <span className="font-unbounded font-medium text-[#d8d8d8] text-[18px] text-center">
-            Войти
+            Зарегистрироваться
           </span>
         </button>
 
@@ -68,5 +67,3 @@ export function LoginForm() {
     </>
   );
 }
-
-export default LoginForm;

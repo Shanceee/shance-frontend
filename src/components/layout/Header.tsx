@@ -50,9 +50,12 @@ export function Header() {
 
           {/* Кнопка входа */}
           <div className="flex items-center space-x-4">
-            <button className="px-6 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 transition-colors font-montserrat">
+            <Link
+              href="/login"
+              className="px-6 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 transition-colors font-montserrat"
+            >
               Войти
-            </button>
+            </Link>
 
             {/* Мобильное меню */}
             <button

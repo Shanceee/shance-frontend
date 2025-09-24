@@ -9,4 +9,5 @@ export type { LoginResponse, RegisterResponse } from './api/authApi';
 export { useAuth } from './hooks/useAuth';
 
 // Экспорт компонентов
-export { default as LoginForm } from './components/LoginForm';
+export { LoginForm } from './components/LoginForm';
+export { RegisterForm } from './components/RegisterForm';
