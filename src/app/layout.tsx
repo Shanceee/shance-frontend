@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 
 import { QueryProvider } from '@/components/providers/QueryProvider';
@@ -13,7 +13,11 @@ export const metadata: Metadata = {
     'Твой путь в IT-стартапе — просто и быстро. Стань частью стартапа, найди свой проект и расти профессионально.',
   keywords: 'стартап, IT, проекты, команда, разработка, карьера',
   authors: [{ name: 'Shance Team' }],
-  viewport: 'width=device-width, initial-scale=1',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
   themeColor: '#232323',
 };
 

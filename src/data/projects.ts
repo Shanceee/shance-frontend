@@ -19,7 +19,7 @@ export const projectsData: ProjectData[] = [
     description:
       'Sed ut perspiciatis, unde omnis iste voluptatem perspiciatis omnis iste sed ut unde omnis sed ut',
     date: '12/03/2024',
-    imageSrc: '/images/fon1.png',
+    imageSrc: '/images/fon2.png',
     imageAlt: 'Дневник здоровья',
     tags: ['#рефлексия', '#игра', '#медицина', '#ИИ', '#здоровье'],
     stage: 'разработка',
@@ -72,7 +72,7 @@ export const projectsData: ProjectData[] = [
     description:
       'Sed ut perspiciatis, unde omnis iste voluptatem perspiciatis omnis iste sed ut unde omnis sed ut',
     date: '08/03/2025',
-    imageSrc: '/images/fon1.png',
+    imageSrc: '/images/fon2.png',
     imageAlt: 'VibeMatch',
     tags: ['#друзья', '#соцсеть', '#сервис', '#знакомство', '#поиск'],
     isPrototype: true,
@@ -100,7 +100,7 @@ export const projectsData: ProjectData[] = [
     description:
       'Sed ut perspiciatis, unde omnis iste voluptatem perspiciatis omnis iste sed ut unde omnis sed ut',
     date: '22/05/2025',
-    imageSrc: '/images/fon1.png',
+    imageSrc: '/images/fon2.png',
     imageAlt: 'AutoCharge',
     tags: ['#бронирование', '#charge', '#mobile', '#стартап', '#application'],
     isPrototype: true,
