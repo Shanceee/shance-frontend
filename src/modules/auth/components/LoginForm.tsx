@@ -1,164 +1,122 @@
-import React, { useState } from 'react';
+'use client';
 
-import { useLogin } from '@/hooks';
-import Button from '@/components/ui/button';
-import Input from '@/components/ui/input';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 
-import type { LoginCredentials } from '../types';
+import PhoneIcon from '@/assets/phone.svg';
+import LockIcon from '@/assets/lock.svg';
+import EyeIcon from '@/assets/eye.svg';
+import { useLogin } from '@/modules/auth';
+import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
 
-interface LoginFormProps {
-  onSuccess?: () => void;
-  onSwitchToRegister?: () => void;
-}
+export function LoginForm() {
+  const [showPassword, setShowPassword] = useState(false);
+  const { mutate: login, isPending, error: apiError } = useLogin();
 
-const LoginForm: React.FC<LoginFormProps> = ({
-  onSuccess,
-  onSwitchToRegister,
-}) => {
-  const loginMutation = useLogin();
-  const [formData, setFormData] = useState<LoginCredentials>({
-    email: '',
-    password: '',
-    rememberMe: false,
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
   });
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
 
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    if (!formData.email) {
-      errors.email = 'Email обязателен';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Введите корректный email';
-    }
-
-    if (!formData.password) {
-      errors.password = 'Пароль обязателен';
-    } else if (formData.password.length < 6) {
-      errors.password = 'Пароль должен содержать минимум 6 символов';
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      const success = await loginMutation.mutateAsync(formData);
-      if (success) {
-        onSuccess?.();
-      }
-    } catch (error) {
-      console.error('Login failed:', error);
-    }
-  };
-
-  const handleInputChange = (
-    field: keyof LoginCredentials,
-    value: string | boolean
-  ) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    if (validationErrors[field]) {
-      setValidationErrors(prev => ({
-        ...prev,
-        [field]: '',
-      }));
-    }
+  const onSubmit = (data: LoginFormData) => {
+    login(data);
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-white py-8 px-6 shadow-lg rounded-lg">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 font-unbounded">
-            Вход в систему
-          </h2>
-          <p className="mt-2 text-sm text-gray-600 font-montserrat">
-            Войдите в свой аккаунт
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {loginMutation.error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-              <p className="text-sm text-red-600 font-montserrat">
-                {loginMutation.error.message}
-              </p>
-            </div>
-          )}
-
-          <Input
-            label="Email"
-            type="email"
-            value={formData.email}
-            onChange={e => handleInputChange('email', e.target.value)}
-            error={validationErrors.email}
-            placeholder="your@email.com"
-            required
-          />
-
-          <Input
-            label="Пароль"
-            type="password"
-            value={formData.password}
-            onChange={e => handleInputChange('password', e.target.value)}
-            error={validationErrors.password}
-            placeholder="Введите пароль"
-            required
-          />
-
-          <div className="flex items-center justify-between">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={formData.rememberMe}
-                onChange={e =>
-                  handleInputChange('rememberMe', e.target.checked)
-                }
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <span className="ml-2 text-sm text-gray-700 font-montserrat">
-                Запомнить меня
-              </span>
-            </label>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full flex flex-col gap-[22px] items-center"
+    >
+      {/* Email input */}
+      <div className="w-full max-w-[400px]">
+        <div className="bg-[rgba(217,217,217,0.05)] flex gap-3 h-[58px] items-center justify-start px-5 py-2.5 relative rounded-[12px] w-full">
+          <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
+          <div className="relative shrink-0 size-[17.964px]">
+            <PhoneIcon className="block max-w-none size-full text-[#575757]" />
           </div>
+          <div className="bg-[#575757] h-5 shrink-0 w-px" />
+          <input
+            type="email"
+            {...register('email')}
+            placeholder="Email"
+            disabled={isPending}
+            className="font-unbounded font-medium text-[18px] leading-[24px] text-white bg-transparent border-none outline-none flex-1 placeholder:text-[#808080]"
+          />
+        </div>
+        {errors.email && (
+          <p className="text-red-400 text-xs mt-1 ml-2 font-unbounded">
+            {errors.email.message}
+          </p>
+        )}
+      </div>
 
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            loading={loginMutation.isPending}
-            fullWidth
-            disabled={loginMutation.isPending}
-          >
-            {loginMutation.isPending ? 'Вход...' : 'Войти'}
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center">
+      {/* Password input */}
+      <div className="w-full max-w-[400px]">
+        <div className="bg-[rgba(217,217,217,0.05)] flex h-[58px] items-center justify-between px-5 py-2.5 relative rounded-[12px] w-full">
+          <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
+          <div className="flex gap-3 items-center justify-start relative flex-1">
+            <div className="h-5 relative shrink-0 w-[16.667px]">
+              <LockIcon className="block max-w-none size-full text-[#575757]" />
+            </div>
+            <div className="bg-[#575757] h-5 shrink-0 w-px" />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              {...register('password')}
+              placeholder="Пароль"
+              disabled={isPending}
+              className="font-unbounded font-medium text-[18px] leading-[24px] text-white bg-transparent border-none outline-none flex-1 placeholder:text-[#808080]"
+            />
+          </div>
           <button
             type="button"
-            onClick={onSwitchToRegister}
-            className="text-sm text-blue-600 hover:text-blue-500 font-medium font-montserrat"
+            onClick={() => setShowPassword(!showPassword)}
+            className="relative shrink-0 size-5 hover:opacity-70 transition-opacity ml-3"
           >
-            Нет аккаунта? Зарегистрироваться
+            <EyeIcon className="block max-w-none size-full text-[#575757]" />
           </button>
         </div>
+        {errors.password && (
+          <p className="text-red-400 text-xs mt-1 ml-2 font-unbounded">
+            {errors.password.message}
+          </p>
+        )}
       </div>
-    </div>
+
+      {/* Submit button and privacy policy */}
+      <div className="flex flex-col gap-3.5 items-center justify-center relative shrink-0 w-full">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="flex gap-2.5 h-[58px] items-center justify-center overflow-clip px-[52px] py-0 relative rounded-[12px] shrink-0 w-full max-w-[400px] bg-gradient-to-br from-[#232323] to-[#2f835e] hover:from-[#2f835e] hover:to-[#3a9e72] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+        >
+          <span className="font-unbounded font-medium text-[#d8d8d8] text-[18px] text-center">
+            {isPending ? 'Вход...' : 'Войти'}
+          </span>
+        </button>
+
+        {apiError && (
+          <p className="text-red-400 text-sm font-unbounded text-center">
+            {apiError.message || 'Ошибка входа'}
+          </p>
+        )}
+
+        <p className="font-jost font-medium text-[#aaaaaa] text-[13px] leading-[1.23em] text-center max-w-[400px]">
+          <span>Продолжая, я соглашаюсь с </span>
+          <Link
+            href="/privacy"
+            className="text-[#ebebeb] hover:text-white cursor-pointer transition-colors"
+          >
+            Политикой конфиденциальности
+          </Link>
+        </p>
+      </div>
+    </form>
   );
-};
+}
 
 export default LoginForm;

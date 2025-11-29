@@ -4,6 +4,7 @@ module.exports = {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/modules/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -11,6 +12,7 @@ module.exports = {
         miracode: ['Miracode', 'monospace'],
         montserrat: ['Montserrat', 'sans-serif'],
         unbounded: ['Unbounded', 'sans-serif'],
+        jost: ['Jost', 'sans-serif'],
       },
       colors: {
         background: '#232323',

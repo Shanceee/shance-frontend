@@ -1,200 +1,195 @@
-class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
+import ky, { type KyInstance, type Options } from 'ky';
 
-class ApiClient {
-  private baseUrl: string;
-  private timeout: number;
+import { ApiError } from '@/types/api';
 
-  constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-    this.timeout = Number(process.env.NEXT_PUBLIC_API_TIMEOUT || 10000);
-  }
+const TOKEN_KEY = 'shance_jwt_token';
+const REFRESH_KEY = 'shance_refresh_token';
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
-
-    const config: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-      ...options,
-    };
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
-    try {
-      const response = await fetch(url, {
-        ...config,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new ApiError(
-          errorData.message || `HTTP error! status: ${response.status}`,
-          response.status
-        );
-      }
-
-      return await response.json();
-    } catch (error) {
-      clearTimeout(timeoutId);
-
-      if (error instanceof ApiError) {
-        throw error;
-      }
-
-      if (error instanceof Error && error.name === 'AbortError') {
-        throw new ApiError('Request timeout', 408);
-      }
-
-      throw new ApiError(
-        error instanceof Error ? error.message : 'Network error',
-        500
-      );
+export const tokenManager = {
+  getToken: (): string | null => {
+    if (typeof window === 'undefined') return null;
+    const token = localStorage.getItem(TOKEN_KEY);
+    // Filter out invalid values that might have been stored
+    if (!token || token === 'undefined' || token === 'null') {
+      return null;
     }
+    return token;
+  },
+
+  setToken: (token: string | undefined | null): void => {
+    if (typeof window === 'undefined') return;
+    // Only set valid tokens
+    if (token && token !== 'undefined' && token !== 'null') {
+      localStorage.setItem(TOKEN_KEY, token);
+    }
+  },
+
+  getRefreshToken: (): string | null => {
+    if (typeof window === 'undefined') return null;
+    const token = localStorage.getItem(REFRESH_KEY);
+    // Filter out invalid values that might have been stored
+    if (!token || token === 'undefined' || token === 'null') {
+      return null;
+    }
+    return token;
+  },
+
+  setRefreshToken: (token: string | undefined | null): void => {
+    if (typeof window === 'undefined') return;
+    // Only set valid tokens
+    if (token && token !== 'undefined' && token !== 'null') {
+      localStorage.setItem(REFRESH_KEY, token);
+    }
+  },
+
+  clearTokens: (): void => {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_KEY);
+  },
+
+  isAuthenticated: (): boolean => {
+    return !!tokenManager.getToken();
+  },
+};
+
+let isRefreshing = false;
+let refreshPromise: Promise<string> | null = null;
+
+const refreshAccessToken = async (): Promise<string> => {
+  const refreshToken = tokenManager.getRefreshToken();
+  if (!refreshToken) {
+    throw new ApiError('No refresh token', 401);
   }
 
-  // GET запрос
-  async get<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'GET' });
-  }
-
-  // POST запрос
-  async post<T>(endpoint: string, data?: unknown): Promise<T> {
-    return this.request<T>(endpoint, {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL || 'http://185.171.82.179:8000/api/v1'}/auth/refresh/`,
+    {
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
-    });
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh: refreshToken }),
+    }
+  );
+
+  if (!response.ok) {
+    tokenManager.clearTokens();
+    throw new ApiError('Token refresh failed', response.status);
   }
 
-  // PUT запрос
-  async put<T>(endpoint: string, data?: unknown): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
-    });
+  const data = await response.json();
+  tokenManager.setToken(data.access);
+  if (data.refresh) {
+    tokenManager.setRefreshToken(data.refresh);
   }
 
-  // PATCH запрос
-  async patch<T>(endpoint: string, data?: unknown): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
+  return data.access;
+};
 
-  // DELETE запрос
-  async delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'DELETE' });
-  }
+const baseApi: KyInstance = ky.create({
+  prefixUrl:
+    process.env.NEXT_PUBLIC_API_URL || 'http://185.171.82.179:8000/api/v1',
+  timeout: 30000,
+  hooks: {
+    beforeRequest: [
+      request => {
+        const token = tokenManager.getToken();
+        if (token) {
+          request.headers.set('Authorization', `JWT ${token}`);
+        }
+      },
+    ],
+    afterResponse: [
+      async (request, options, response) => {
+        if (response.status === 401 && !request.url.includes('/auth/refresh')) {
+          if (!isRefreshing) {
+            isRefreshing = true;
+            refreshPromise = refreshAccessToken().finally(() => {
+              isRefreshing = false;
+              refreshPromise = null;
+            });
+          }
 
-  // Запрос с пагинацией
-  async getPaginated<T>(
-    endpoint: string,
-    page: number = 1,
-    limit: number = 10
-  ): Promise<import('@/types').PaginatedResponse<T>> {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-    });
+          try {
+            const newToken = await refreshPromise;
+            if (newToken) {
+              request.headers.set('Authorization', `JWT ${newToken}`);
+              return ky(request, options);
+            }
+          } catch {
+            tokenManager.clearTokens();
+            if (
+              typeof window !== 'undefined' &&
+              !window.location.pathname.includes('/login')
+            ) {
+              window.location.href = '/login';
+            }
+          }
+        }
+        return response;
+      },
+    ],
+    beforeError: [
+      async error => {
+        const { response } = error;
+        if (response) {
+          try {
+            const data = (await response.json()) as Record<string, unknown>;
+            const message =
+              (data.detail as string) ||
+              (data.message as string) ||
+              `HTTP error ${response.status}`;
+            throw new ApiError(message, response.status, data);
+          } catch (e) {
+            if (e instanceof ApiError) throw e;
+            throw new ApiError(
+              `HTTP error ${response.status}`,
+              response.status
+            );
+          }
+        }
+        return error;
+      },
+    ],
+  },
+});
 
-    return this.get(`${endpoint}?${params}`);
-  }
+type RequestParams = Record<
+  string,
+  string | number | boolean | undefined | null
+>;
+
+function buildSearchParams(params?: RequestParams): string {
+  if (!params) return '';
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) {
+      searchParams.append(key, String(value));
+    }
+  });
+  const str = searchParams.toString();
+  return str ? `?${str}` : '';
 }
 
-export const apiClient = new ApiClient();
-export { ApiError };
+export const api = {
+  get: <T>(
+    url: string,
+    params?: RequestParams,
+    options?: Options
+  ): Promise<T> =>
+    baseApi.get(`${url}${buildSearchParams(params)}`, options).json<T>(),
 
-// API для идеальных проектов
-export const getPerfectProjects = async () => {
-  // TODO: Заменить на реальный API endpoint
-  // const response = await fetch('/api/perfect-projects')
-  // return response.json()
+  post: <T>(url: string, data?: unknown, options?: Options): Promise<T> =>
+    baseApi.post(url, { json: data, ...options }).json<T>(),
 
-  // Моковые данные для демонстрации
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve([
-        {
-          id: 'perfect-1',
-          title: 'GreenScan – анализ',
-          description:
-            'Sed ut perspiciatis, unde omnis iste voluptatem perspiciatis omnis iste sed ut unde omnis sed ut',
-          date: '09/01/2024',
-          imageSrc: '/images/fon2.png',
-          imageAlt: 'GreenScan анализ',
-          tags: [
-            '#анализ',
-            '#углерод',
-            '#неросети',
-            '#знакомство',
-            '#сближение',
-          ],
-        },
-        {
-          id: 'perfect-2',
-          title: 'дневник здоровья с AI-анализом',
-          description:
-            'Sed ut perspiciatis, unde omnis iste voluptatem perspiciatis omnis iste sed ut unde omnis sed ut',
-          date: '12/03/2024',
-          imageSrc: '/images/fon1.png',
-          imageAlt: 'Дневник здоровья',
-          tags: ['#рефлексия', '#игра', '#медицина', '#ИИ', '#здоровье'],
-        },
-        {
-          id: 'perfect-3',
-          title: 'Мобильное приложение "Честно"',
-          description:
-            'Sed ut perspiciatis, unde omnis iste voluptatem perspiciatis omnis iste sed ut unde omnis sed ut',
-          date: '12/03/2025',
-          imageSrc: '/images/fon3.png',
-          imageAlt: 'Приложение Честно',
-          tags: ['#рефлексия', '#игра', '#друзья', '#знакомство', '#сближение'],
-          isPrototype: true,
-        },
-        {
-          id: 'perfect-4',
-          title: 'EduMind – платформа с курсами',
-          description:
-            'Sed ut perspiciatis, unde omnis iste voluptatem perspiciatis omnis iste sed ut unde omnis sed ut',
-          date: '11/04/2025',
-          imageSrc: '/images/fon1.png',
-          imageAlt: 'Платформа EduMind',
-          tags: ['#курсы', '#обучение', '#ИИ', '#нейросети', '#анализ'],
-        },
-        {
-          id: 'perfect-5',
-          title: 'FaceLock – биометрический замок',
-          description:
-            'Sed ut perspiciatis, unde omnis iste voluptatem perspiciatis omnis iste sed ut unde omnis sed ut',
-          date: '12/03/2025',
-          imageSrc: '/images/fon2.png',
-          imageAlt: 'FaceLock',
-          tags: [
-            '#биометрия',
-            '#безопасность',
-            '#facelock',
-            '#security',
-            '#защита',
-          ],
-        },
-      ]);
-    }, 500);
-  });
+  put: <T>(url: string, data?: unknown, options?: Options): Promise<T> =>
+    baseApi.put(url, { json: data, ...options }).json<T>(),
+
+  patch: <T>(url: string, data?: unknown, options?: Options): Promise<T> =>
+    baseApi.patch(url, { json: data, ...options }).json<T>(),
+
+  delete: <T>(url: string, options?: Options): Promise<T> =>
+    baseApi.delete(url, options).json<T>(),
+
+  upload: <T>(url: string, formData: FormData, options?: Options): Promise<T> =>
+    baseApi.post(url, { body: formData, ...options }).json<T>(),
 };

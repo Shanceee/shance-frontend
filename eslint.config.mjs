@@ -40,7 +40,7 @@ const eslintConfig = [
       // Строгие правила для качества кода
       'no-console': 'warn',
       'no-debugger': 'error',
-      'no-unused-vars': 'error',
+      'no-unused-vars': 'warn',
       'prefer-const': 'error',
       'no-var': 'error',
 

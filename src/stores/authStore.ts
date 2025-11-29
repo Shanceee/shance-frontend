@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-import type { User } from '@/modules/auth';
+import type { User } from '@/types/api';
 
 export interface AuthState {
   // UI состояние

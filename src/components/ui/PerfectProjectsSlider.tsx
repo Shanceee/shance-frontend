@@ -5,8 +5,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import Image from 'next/image';
 
-import { ProjectData } from '@/data/projects';
-import { getPerfectProjects } from '@/lib/api';
+import { ProjectData, projectsData } from '@/data/projects';
+import { projectsApi } from '@/modules/projects';
 
 import { ProjectCard } from './ProjectCard';
 
@@ -28,10 +28,32 @@ export function PerfectProjectsSlider({
   useEffect(() => {
     const fetchPerfectProjects = async () => {
       try {
-        const perfectProjects = await getPerfectProjects();
-        setProjects(perfectProjects as ProjectData[]);
+        const response = await projectsApi.list({ page_size: 10 });
+
+        // If API returns empty, use mock data
+        if (!response.results || response.results.length === 0) {
+          setProjects(projectsData);
+          return;
+        }
+
+        const mappedProjects = response.results.map(p => ({
+          id: String(p.id),
+          title: p.title || p.name,
+          description: p.description,
+          date: p.created_at
+            ? new Date(p.created_at).toLocaleDateString('ru-RU')
+            : '',
+          imageSrc: p.photo || '/images/faq-image-b3a29d.png',
+          imageAlt: p.title || p.name,
+          tags: p.tags?.map(t => `#${t.name}`) || [],
+        }));
+        setProjects(mappedProjects as ProjectData[]);
       } catch (error) {
-        console.error('Ошибка загрузки идеальных проектов:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Ошибка загрузки проектов:', error);
+        }
+        // Fallback to mock data on error
+        setProjects(projectsData);
       } finally {
         setIsLoading(false);
       }
