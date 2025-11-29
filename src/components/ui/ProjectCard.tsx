@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { ProjectData } from '@/data/projects';
 
@@ -10,19 +11,18 @@ export interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, className = '' }: ProjectCardProps) {
-  // Проверка на существование проекта
+  // Error handling for missing project
   if (!project) {
     return (
       <div
         className={`relative group transition-all duration-300 ${className} w-full`}
       >
         <div
-          className="backdrop-blur-[14.34px] rounded-[20px] p-[14.34px] h-full relative overflow-hidden flex flex-col"
+          className="rounded-[20px] p-6 relative overflow-hidden"
           style={{
             background:
-              'linear-gradient(229deg, rgba(35, 35, 35, 1) 0%, rgba(47, 131, 94, 1) 100%)',
-            boxShadow:
-              '0px 2.87px 7.17px 0px rgba(0, 0, 0, 0.25), inset 0px 2.65px 5.31px 0px rgba(255, 255, 255, 0.05), 0 0 0 0.66px rgba(179, 179, 179, 0.3)',
+              'linear-gradient(135deg, rgba(35, 35, 35, 0.9) 0%, rgba(35, 45, 40, 0.9) 100%)',
+            border: '1px solid rgba(0, 168, 81, 0.3)',
           }}
         >
           <div className="flex items-center justify-center h-full">
@@ -33,19 +33,18 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
     );
   }
 
-  // Проверка на корректность структуры проекта
+  // Error handling for incomplete project data
   if (!project.title || !project.description || !project.tags) {
     return (
       <div
         className={`relative group transition-all duration-300 ${className} w-full`}
       >
         <div
-          className="backdrop-blur-[14.34px] rounded-[20px] p-[14.34px] h-full relative overflow-hidden flex flex-col"
+          className="rounded-[20px] p-6 relative overflow-hidden"
           style={{
             background:
-              'linear-gradient(229deg, rgba(35, 35, 35, 1) 0%, rgba(47, 131, 94, 1) 100%)',
-            boxShadow:
-              '0px 2.87px 7.17px 0px rgba(0, 0, 0, 0.25), inset 0px 2.65px 5.31px 0px rgba(255, 255, 255, 0.05), 0 0 0 0.66px rgba(179, 179, 179, 0.3)',
+              'linear-gradient(135deg, rgba(35, 35, 35, 0.9) 0%, rgba(35, 45, 40, 0.9) 100%)',
+            border: '1px solid rgba(0, 168, 81, 0.3)',
           }}
         >
           <div className="flex items-center justify-center h-full">
@@ -59,109 +58,111 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
   }
 
   return (
-    <div
-      className={`relative group transition-all duration-300 hover:scale-105 ${className} w-full`}
-    >
+    <Link href={`/projects/${project.id}`}>
       <div
-        className="backdrop-blur-[14.34px] rounded-[20px] p-[14.34px] relative overflow-hidden flex flex-col h-full"
-        style={{
-          background:
-            'linear-gradient(229deg, rgba(35, 35, 35, 1) 0%, rgba(47, 131, 94, 1) 100%)',
-          boxShadow:
-            '0px 2.87px 7.17px 0px rgba(0, 0, 0, 0.25), inset 0px 2.65px 5.31px 0px rgba(255, 255, 255, 0.05), 0 0 0 0.66px rgba(179, 179, 179, 0.3)',
-        }}
+        className={`relative group transition-all duration-300 ${className} w-full`}
       >
-        {/* Header with title and date */}
-        <div className="flex flex-col gap-[4.3px] mb-[14.34px] flex-shrink-0">
-          <h3
-            className="text-base font-unbounded font-medium text-white leading-[1.24] cursor-pointer truncate"
-            title={project.title}
-          >
-            {project.title}
-          </h3>
-          <p className="text-[8.6px] font-miracode text-white/80 leading-[1.51]">
-            {project.date}
-          </p>
-        </div>
+        <div
+          className="rounded-[20px] p-6 relative overflow-hidden flex gap-6"
+          style={{
+            background:
+              'linear-gradient(135deg, rgba(35, 35, 35, 0.9) 0%, rgba(35, 45, 40, 0.9) 100%)',
+            border: '1px solid rgba(0, 168, 81, 0.3)',
+          }}
+        >
+          {/* Left Section - ~70% width */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {/* Title and Date */}
+            <h3 className="text-2xl font-unbounded font-semibold text-white leading-tight mb-1">
+              {project.title}
+            </h3>
+            <p className="text-sm font-miracode text-white/60 mb-4">
+              {project.date}
+            </p>
 
-        {/* Image container */}
-        <div className="relative w-full h-[195px] rounded-[21.5px] overflow-hidden mb-[14.34px] flex-shrink-0">
-          <Image
-            src={project.imageSrc}
-            alt={project.imageAlt}
-            fill
-            className="object-cover"
-            onError={e => {
-              // Fallback для изображения
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-            }}
-          />
-
-          {/* Prototype badge if applicable */}
-          {project.isPrototype && (
-            <div
-              className="absolute top-[7.17px] left-[7.17px] px-[7.17px] py-[7.17px] bg-transparent backdrop-blur-sm rounded-lg flex items-center justify-center"
-              style={{
-                border: '2px solid',
-                borderImage:
-                  'linear-gradient(89deg, rgba(179, 179, 179, 0.5) 0%, rgba(33, 33, 33, 0.2) 21%, rgba(52, 52, 52, 0.2) 50%, rgba(179, 179, 179, 0.5) 79%) 1',
-              }}
-            >
-              <span className="text-xs font-unbounded text-white leading-tight">
-                прототип
-              </span>
+            {/* Image with description overlay */}
+            <div className="relative w-full h-[200px] rounded-[16px] overflow-hidden mb-4">
+              <Image
+                src={project.imageSrc}
+                alt={project.imageAlt}
+                fill
+                className="object-cover"
+                onError={e => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
+              />
+              {/* Description overlay at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                <p className="text-sm font-montserrat text-white/90 line-clamp-2">
+                  {project.description}
+                </p>
+              </div>
             </div>
-          )}
 
-          {/* Description overlay */}
-          <div className="absolute bottom-[7.17px] left-[5.74px] right-[5.74px] p-[7.17px]">
-            <div className="bg-black/20 backdrop-blur-sm rounded-lg p-[7.17px]">
-              <p className="text-[12.44px] font-montserrat text-white leading-[1.22] line-clamp-3">
-                {project.description}
-              </p>
+            {/* Tags and Arrow button row */}
+            <div className="flex items-center justify-between mt-auto">
+              <div className="flex items-center gap-4 flex-wrap">
+                {project.tags.slice(0, 5).map((tag, index) => (
+                  <span
+                    key={index}
+                    className="text-sm font-miracode text-white/50"
+                  >
+                    {tag.startsWith('#') ? tag : `#${tag}`}
+                  </span>
+                ))}
+              </div>
+              <button className="w-[48px] h-[48px] bg-[#00A851] rounded-full flex items-center justify-center hover:bg-[#008f45] transition-colors flex-shrink-0">
+                <Image
+                  src="/images/arrow.svg"
+                  width={24}
+                  height={24}
+                  alt="Arrow"
+                />
+              </button>
             </div>
           </div>
-        </div>
 
-        {/* Footer with tags and like button */}
-        <div className="flex items-center justify-between mt-auto flex-shrink-0 gap-[35.85px]">
-          {/* Tags */}
-          <div className="flex items-center gap-[18.64px] flex-wrap flex-1 min-w-0">
-            {project.tags &&
-              project.tags.slice(0, 5).map((tag, index) => (
-                <span
-                  key={index}
-                  className="text-[8.6px] font-miracode text-white/70 leading-[1.51] whitespace-nowrap"
-                >
-                  #{tag}
+          {/* Right Section - Info Panel */}
+          <div className="w-[180px] flex-shrink-0 flex flex-col gap-4">
+            {/* Stage */}
+            <div className="flex flex-col gap-2">
+              <span className="text-base font-unbounded text-white">
+                Стадия:
+              </span>
+              <div className="px-4 py-2 rounded-full bg-[#2a2a2a] border border-white/20 text-center">
+                <span className="text-sm font-unbounded text-white">
+                  {project.stage || 'прототип'}
                 </span>
-              ))}
-            {project.tags && project.tags.length > 5 && (
-              <span className="text-[8.6px] font-miracode text-white/50 leading-[1.51]">
-                +{project.tags.length - 5}
-              </span>
-            )}
-          </div>
+              </div>
+            </div>
 
-          {/* Like button */}
-          <button
-            className="w-[38px] h-[38px] bg-[#00A851] backdrop-blur-[14.34px] rounded-[19px] flex items-center justify-center hover:bg-[#008f45] transition-colors flex-shrink-0"
-            style={{
-              boxShadow:
-                '0px 2.87px 7.17px 0px rgba(0, 0, 0, 0.25), inset 0px 2.65px 5.31px 0px rgba(255, 255, 255, 0.05)',
-            }}
-          >
-            <Image
-              src="/images/arrow.svg"
-              width="18"
-              height="18"
-              alt="Arrow icon"
-              className="w-[18px] h-[18px]"
-            />
-          </button>
+            {/* Status */}
+            <div className="flex flex-col gap-2">
+              <span className="text-base font-unbounded text-white">
+                Статус:
+              </span>
+              <div className="px-4 py-2 rounded-full bg-[#2a2a2a] border border-white/20 text-center">
+                <span className="text-sm font-unbounded text-white">
+                  {project.status || 'прототип'}
+                </span>
+              </div>
+            </div>
+
+            {/* Team */}
+            <div className="flex flex-col gap-2">
+              <span className="text-base font-unbounded text-white">
+                Команда:
+              </span>
+              <div className="px-4 py-2 rounded-full bg-[#2a2a2a] border border-white/20 text-center">
+                <span className="text-sm font-unbounded text-white">
+                  {project.teamSize || 'до 20 чел'}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

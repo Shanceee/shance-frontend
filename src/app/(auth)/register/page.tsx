@@ -1,50 +1,20 @@
-import Image from 'next/image';
+'use client';
 
-import { RegisterForm } from '@/modules/auth/components/RegisterForm';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+import { RegisterForm } from '@/modules/auth';
+import { tokenManager } from '@/lib/api';
 
 export default function RegisterPage() {
-  return (
-    <div className="min-h-screen bg-[#161419] relative overflow-hidden">
-      <div className="absolute h-[102px] left-1/2 transform -translate-x-1/2 top-[101px] w-[100.455px]">
-        <Image
-          src="/images/logo.svg"
-          width={500}
-          height={500}
-          alt="Shance Logo"
-        />
-      </div>
+  const router = useRouter();
 
-      {/* Main form container */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 top-[220px] w-[456px] max-w-[90vw]">
-        <div className="flex flex-col gap-3 items-start justify-center">
-          {/* Header with title */}
-          <div className="flex gap-[116px] items-center justify-start px-7 py-0 w-full">
-            <h1 className="font-unbounded font-semibold text-[#ebebeb] text-[20px] leading-[36px]">
-              Регистрация
-            </h1>
-          </div>
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (tokenManager.getToken()) {
+      router.replace('/dashboard');
+    }
+  }, [router]);
 
-          {/* Form */}
-          <div className="flex flex-col gap-5 items-center justify-start w-full">
-            <div className="bg-[#202122] flex flex-col gap-[22px] items-center justify-center p-[28px] rounded-[20px] w-full">
-              <RegisterForm />
-            </div>
-
-            {/* Login link */}
-            <div className="flex items-center justify-between px-7 py-0 w-full">
-              <span className="font-unbounded font-normal text-[#aaaaaa] text-[14px] leading-[16px]">
-                Есть аккаунт?
-              </span>
-              <a
-                href="/login"
-                className="font-unbounded font-normal text-[#ebebeb] text-[14px] leading-[16px] hover:text-white transition-colors"
-              >
-                Войти
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <RegisterForm />;
 }

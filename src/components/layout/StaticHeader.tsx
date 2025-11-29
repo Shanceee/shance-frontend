@@ -2,15 +2,25 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useSmoothScroll } from '@/hooks';
+import { useCurrentUser, useLogout } from '@/modules/auth';
 
 export function StaticHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const { scrollToElementWithOffset } = useSmoothScroll();
+  const { data: user, isLoading } = useCurrentUser();
+  const logoutMutation = useLogout();
+  const isAuthenticated = !!user;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleNavigation = (section: string) => {
     setIsMenuOpen(false);
@@ -53,6 +63,20 @@ export function StaticHeader() {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const toggleUserMenu = () => {
+    setIsUserMenuOpen(!isUserMenuOpen);
+  };
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+    setIsUserMenuOpen(false);
+  };
+
+  const handleProfileClick = () => {
+    router.push('/profile');
+    setIsUserMenuOpen(false);
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-md border-b border-white/10">
       <div className="container mx-auto px-5 py-4">
@@ -89,24 +113,87 @@ export function StaticHeader() {
             ))}
           </nav>
 
-          {/* Кнопка входа для десктопа */}
+          {/* Кнопка входа или пользователь для десктопа */}
           <div className="hidden md:flex items-center space-x-4 transition-all duration-500 opacity-100 translate-x-0">
-            <Link
-              href="/login"
-              className="px-6 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 font-montserrat"
-            >
-              Войти
-            </Link>
+            {!isMounted || isLoading ? (
+              <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  onClick={toggleUserMenu}
+                  className="flex items-center space-x-2 px-4 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 font-montserrat"
+                >
+                  <div className="w-6 h-6 bg-[#00A851] rounded-full flex items-center justify-center text-xs font-bold">
+                    {user.email?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                  <span className="text-sm">{user.email}</span>
+                  <svg
+                    className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {/* User dropdown menu */}
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-[#202122] border border-white/20 rounded-lg shadow-lg py-2 z-50">
+                    <button
+                      onClick={handleProfileClick}
+                      className="w-full text-left px-4 py-2 text-white hover:bg-white/10 transition-colors font-montserrat"
+                    >
+                      Профиль
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-white hover:bg-white/10 transition-colors font-montserrat"
+                    >
+                      Выйти
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="px-6 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 font-montserrat"
+              >
+                Войти
+              </Link>
+            )}
           </div>
 
           {/* Мобильное меню */}
           <div className="md:hidden flex items-center space-x-4">
-            <Link
-              href="/login"
-              className="px-4 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 font-montserrat"
-            >
-              Войти
-            </Link>
+            {!isMounted || isLoading ? (
+              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : isAuthenticated && user ? (
+              <button
+                onClick={handleProfileClick}
+                className="flex items-center space-x-2 px-3 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 font-montserrat"
+              >
+                <div className="w-5 h-5 bg-[#00A851] rounded-full flex items-center justify-center text-xs font-bold">
+                  {user.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                <span className="text-sm truncate max-w-[100px]">
+                  {user.email}
+                </span>
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 font-montserrat"
+              >
+                Войти
+              </Link>
+            )}
             <button
               onClick={toggleMenu}
               className="p-2 text-white hover:bg-white/10 rounded-lg transition-all duration-300"
@@ -149,6 +236,17 @@ export function StaticHeader() {
                   {item.text}
                 </button>
               ))}
+              {isMounted && isAuthenticated && user && (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="block text-white/80 hover:text-white transition-all duration-300 py-2 font-montserrat bg-transparent border-none cursor-pointer text-left w-full"
+                >
+                  Выйти
+                </button>
+              )}
             </nav>
           </div>
         )}

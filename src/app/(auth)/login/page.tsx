@@ -1,10 +1,43 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-import { LoginForm } from '@/modules/auth/components/LoginForm';
+import { LoginForm } from '@/modules/auth';
+import { tokenManager } from '@/lib/api';
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (tokenManager.getToken()) {
+      router.replace('/profile');
+    }
+  }, [router]);
   return (
     <div className="min-h-screen bg-[#161419] relative overflow-hidden">
+      {/* Decorative blurred ellipses */}
+      <div
+        className="absolute w-[488px] h-[488px] rounded-full opacity-40"
+        style={{
+          background: '#00A851',
+          filter: 'blur(244px)',
+          left: '-100px',
+          top: '-50px',
+        }}
+      />
+      <div
+        className="absolute w-[488px] h-[488px] rounded-full opacity-40"
+        style={{
+          background: '#12FF78',
+          filter: 'blur(244px)',
+          right: '-100px',
+          bottom: '50px',
+        }}
+      />
+
       <div className="absolute h-[102px] left-1/2 transform -translate-x-1/2 top-[101px] w-[100.455px]">
         <Image
           src="/images/logo.svg"
