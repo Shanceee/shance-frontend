@@ -1,33 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Suspense } from 'react';
 
-import {
-  ProjectsMainContent,
-  LoadingState,
-  NoProjectsState,
-} from '@/modules/landing/projects-page';
+import { ProjectsMainContent } from '@/modules/landing/projects-page';
 import { FooterSection } from '@/modules/landing';
 import { PerfectProjectsSlider } from '@/components/ui';
-import type { Tag } from '@/types/api';
-import { useProjects, useSearchProjects } from '@/modules/projects';
-import { useCurrentUser } from '@/modules/auth';
 import { projectsData as mockProjects } from '@/data/projects';
-
-// Interface for API project data with proper typing
-interface ApiProject {
-  id: string | number;
-  title?: string;
-  name?: string;
-  description: string;
-  created_at?: string;
-  date?: string;
-  photo?: string;
-  imageSrc?: string;
-  imageAlt?: string;
-  tags?: (Tag | string)[];
-}
+import type { FilterValues } from '@/components/ui/FilterPanel';
 
 // Interface for display project format
 interface DisplayProject {
@@ -40,68 +20,144 @@ interface DisplayProject {
   tags: string[];
 }
 
-function ProjectsContent() {
-  const { isLoading: isAuthLoading } = useCurrentUser();
-  const [searchQuery, setSearchQuery] = useState('');
+// Category mapping from mock data titles to filter options
+const categoryMapping: Record<string, string[]> = {
+  'мобильное приложение': ['приложение', 'mobile', 'мобильн'],
+  'веб-сервис': ['сервис', 'веб', 'web'],
+  платформа: ['платформа', 'platform'],
+  соцсеть: ['соцсеть', 'социальн', 'друзей', 'vibe'],
+};
 
-  const { data: projectsData, isLoading: isLoadingProjects } = useProjects({
-    page_size: 20,
+function ProjectsContent() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<FilterValues>({
+    date: [],
+    category: [],
+    stage: [],
+    tags: [],
   });
 
-  const { data: searchData, isLoading: isSearching } = useSearchProjects(
-    searchQuery,
-    searchQuery.length >= 2
-  );
+  // Combined filtering - search + filters
+  const filteredProjects = useMemo(() => {
+    let result = [...mockProjects];
 
-  // Use search results if searching, otherwise use all projects
-  const shouldUseSearch = searchQuery.length >= 2;
-  const apiProjects = shouldUseSearch
-    ? searchData?.results
-    : projectsData?.results;
-  const isLoading = shouldUseSearch ? isSearching : isLoadingProjects;
-
-  // Show loading while checking authentication or loading projects
-  if (isAuthLoading || isLoading) {
-    return <LoadingState />;
-  }
-
-  // Fallback to mock data when API returns empty (for unauthenticated users or API failures)
-  // But only for the main list, not for search results
-  const projects =
-    !shouldUseSearch && (!apiProjects || apiProjects.length === 0)
-      ? mockProjects
-      : apiProjects;
-
-  // Only show NoProjectsState when searching and no results found
-  if (!projects || projects.length === 0) {
-    return <NoProjectsState />;
-  }
-
-  // Convert API projects to display format
-  const displayProjects = projects.map(
-    (project: ApiProject): DisplayProject => {
-      return {
-        id: project.id?.toString() || String(project.id),
-        title: project.title || project.name || 'Untitled Project',
-        description: project.description,
-        date: project.created_at
-          ? new Date(project.created_at).toLocaleDateString('ru-RU')
-          : project.date || '',
-        imageSrc:
-          project.photo || project.imageSrc || '/images/faq-image-b3a29d.png',
-        imageAlt: project.title || project.imageAlt || 'Project image',
-        tags:
-          project.tags?.map((tag: Tag | string) =>
-            typeof tag === 'string'
-              ? tag
-              : `#${(tag as Tag).name || String(tag)}`
-          ) || [],
-      };
+    // Apply search query filter
+    if (searchQuery.length >= 2) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(project => {
+        const titleMatch = project.title.toLowerCase().includes(query);
+        const descriptionMatch = project.description
+          .toLowerCase()
+          .includes(query);
+        const tagsMatch = project.tags.some(tag =>
+          tag.toLowerCase().includes(query)
+        );
+        return titleMatch || descriptionMatch || tagsMatch;
+      });
     }
-  );
+
+    // Apply date filter (sorting)
+    if (filters.date.length > 0) {
+      if (filters.date.includes('самые новые')) {
+        result = [...result].sort((a, b) => {
+          const [dayA, monthA, yearA] = a.date.split('/');
+          const [dayB, monthB, yearB] = b.date.split('/');
+          const dateA = new Date(
+            parseInt(yearA),
+            parseInt(monthA) - 1,
+            parseInt(dayA)
+          );
+          const dateB = new Date(
+            parseInt(yearB),
+            parseInt(monthB) - 1,
+            parseInt(dayB)
+          );
+          return dateB.getTime() - dateA.getTime();
+        });
+      } else if (filters.date.includes('самые старые')) {
+        result = [...result].sort((a, b) => {
+          const [dayA, monthA, yearA] = a.date.split('/');
+          const [dayB, monthB, yearB] = b.date.split('/');
+          const dateA = new Date(
+            parseInt(yearA),
+            parseInt(monthA) - 1,
+            parseInt(dayA)
+          );
+          const dateB = new Date(
+            parseInt(yearB),
+            parseInt(monthB) - 1,
+            parseInt(dayB)
+          );
+          return dateA.getTime() - dateB.getTime();
+        });
+      }
+    }
+
+    // Apply category filter (multi-select)
+    if (filters.category.length > 0) {
+      result = result.filter(project => {
+        const titleLower = project.title.toLowerCase();
+        const descLower = project.description.toLowerCase();
+        return filters.category.some(category => {
+          const keywords = categoryMapping[category] || [
+            category.toLowerCase(),
+          ];
+          return keywords.some(
+            keyword =>
+              titleLower.includes(keyword) || descLower.includes(keyword)
+          );
+        });
+      });
+    }
+
+    // Apply stage filter (multi-select)
+    if (filters.stage.length > 0) {
+      result = result.filter(project =>
+        filters.stage.some(
+          stage =>
+            project.stage?.toLowerCase() === stage.toLowerCase() ||
+            project.status?.toLowerCase() === stage.toLowerCase()
+        )
+      );
+    }
+
+    // Apply tags filter from filters panel (multi-select)
+    if (filters.tags.length > 0) {
+      result = result.filter(project =>
+        filters.tags.some(filterTag =>
+          project.tags.some(tag => tag.toLowerCase().includes(filterTag))
+        )
+      );
+    }
+
+    return result;
+  }, [searchQuery, filters]);
+
+  // Convert mock projects to display format
+  const displayProjects: DisplayProject[] = useMemo(() => {
+    return filteredProjects.map(project => ({
+      id: project.id,
+      title: project.title,
+      description: project.description,
+      date: project.date,
+      imageSrc: project.imageSrc,
+      imageAlt: project.imageAlt,
+      tags: project.tags,
+    }));
+  }, [filteredProjects]);
 
   const handleResetFilters = () => {
     setSearchQuery('');
+    setFilters({
+      date: [],
+      category: [],
+      stage: [],
+      tags: [],
+    });
+  };
+
+  const handleFiltersChange = (newFilters: FilterValues) => {
+    setFilters(newFilters);
   };
 
   return (
@@ -118,6 +174,7 @@ function ProjectsContent() {
         onSearchChange={setSearchQuery}
         filteredProjects={displayProjects}
         onResetFilters={handleResetFilters}
+        onFiltersChange={handleFiltersChange}
       />
       <FooterSection />
     </main>
@@ -130,7 +187,7 @@ function PerfectProjectsSliderWrapper() {
 
 export default function ProjectsPage() {
   return (
-    <Suspense fallback={<LoadingState />}>
+    <Suspense fallback={<div className="min-h-screen bg-gray-900" />}>
       <ProjectsContent />
     </Suspense>
   );

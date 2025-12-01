@@ -55,7 +55,7 @@ export const useDashboardStore = create<DashboardState>(set => ({
   setStats: stats => set({ stats }),
   setChartData: chartData => set({ chartData }),
   setRecentActivities: activities => set({ recentActivities: activities }),
-  setLoading: isLoading => set({ isLoading }),
+  setLoading: loading => set({ isLoading: loading }),
   setError: error => set({ error }),
   reset: () => set(initialState),
 }));

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { useCurrentUser } from '@/modules/auth';
 import { useProjects } from '@/modules/projects';
@@ -133,48 +134,48 @@ export default function ProfilePage() {
                 {/* Two-column grid of fields */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-9">
                   {/* Row 1: Имя, Фамилия */}
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-0">
                     <label className="text-base font-montserrat text-[#929292]">
                       Имя
                     </label>
-                    <div className="border-b border-white pb-2">
-                      <p className="text-xl font-unbounded text-white">
+                    <div className="border-b border-white pb-2 overflow-hidden">
+                      <p className="text-xl font-unbounded text-white truncate" title={user.first_name || '-'}>
                         {user.first_name || '-'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-0">
                     <label className="text-base font-montserrat text-[#929292]">
                       Фамилия
                     </label>
-                    <div className="border-b border-white pb-2">
-                      <p className="text-xl font-unbounded text-white">
+                    <div className="border-b border-white pb-2 overflow-hidden">
+                      <p className="text-xl font-unbounded text-white truncate" title={user.last_name || '-'}>
                         {user.last_name || '-'}
                       </p>
                     </div>
                   </div>
 
                   {/* Row 2: Сфера деятельности (full width in design, using 2 cols) */}
-                  <div className="flex flex-col gap-2 md:col-span-2">
+                  <div className="flex flex-col gap-2 md:col-span-2 min-w-0">
                     <label className="text-base font-montserrat text-[#929292]">
                       Сфера деятельности
                     </label>
-                    <div className="border-b border-white pb-2">
-                      <p className="text-xl font-unbounded text-white">
+                    <div className="border-b border-white pb-2 overflow-hidden">
+                      <p className="text-xl font-unbounded text-white truncate" title={user.specialization || '-'}>
                         {user.specialization || '-'}
                       </p>
                     </div>
                   </div>
 
                   {/* Row 3: Теги */}
-                  <div className="flex flex-col gap-2 md:col-span-2">
+                  <div className="flex flex-col gap-2 md:col-span-2 min-w-0">
                     <label className="text-base font-montserrat text-[#929292]">
                       Теги
                     </label>
-                    <div className="border-b border-white pb-2">
+                    <div className="border-b border-white pb-2 overflow-hidden">
                       {user.tags && user.tags.length > 0 ? (
-                        <p className="text-xl font-unbounded text-white">
+                        <p className="text-xl font-unbounded text-white truncate" title={user.tags.map(tag => `#${tag.name}`).join(' ')}>
                           {user.tags.map(tag => `#${tag.name}`).join(' ')}
                         </p>
                       ) : (
@@ -184,46 +185,46 @@ export default function ProfilePage() {
                   </div>
 
                   {/* Row 4: Страна, Город */}
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-0">
                     <label className="text-base font-montserrat text-[#929292]">
                       Страна
                     </label>
-                    <div className="border-b border-white pb-2">
-                      <p className="text-xl font-unbounded text-white">
+                    <div className="border-b border-white pb-2 overflow-hidden">
+                      <p className="text-xl font-unbounded text-white truncate" title={user.country || '-'}>
                         {user.country || '-'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-0">
                     <label className="text-base font-montserrat text-[#929292]">
                       Город
                     </label>
-                    <div className="border-b border-white pb-2">
-                      <p className="text-xl font-unbounded text-white">
+                    <div className="border-b border-white pb-2 overflow-hidden">
+                      <p className="text-xl font-unbounded text-white truncate" title={user.city || '-'}>
                         {user.city || '-'}
                       </p>
                     </div>
                   </div>
 
                   {/* Row 5: Телефон, Почта */}
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-0">
                     <label className="text-base font-montserrat text-[#929292]">
                       Телефон
                     </label>
-                    <div className="border-b border-white pb-2">
-                      <p className="text-xl font-unbounded text-white">
+                    <div className="border-b border-white pb-2 overflow-hidden">
+                      <p className="text-xl font-unbounded text-white truncate" title={user.phone || '-'}>
                         {user.phone || '-'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-0">
                     <label className="text-base font-montserrat text-[#929292]">
                       Почта
                     </label>
-                    <div className="border-b border-white pb-2">
-                      <p className="text-xl font-unbounded text-white">
+                    <div className="border-b border-white pb-2 overflow-hidden">
+                      <p className="text-xl font-unbounded text-white truncate" title={user.email || '-'}>
                         {user.email || '-'}
                       </p>
                     </div>
@@ -251,9 +252,9 @@ export default function ProfilePage() {
                         href={user.github_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-between h-[58px] px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent hover:border-white/20 transition-all group"
+                        className="flex-1 flex items-center justify-between h-[58px] px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent hover:border-white/20 transition-all group min-w-0"
                       >
-                        <span className="text-white/80 font-montserrat text-sm">
+                        <span className="text-white/80 font-montserrat text-sm truncate mr-2" title={user.github_url}>
                           {user.github_url}
                         </span>
                         <svg
@@ -298,9 +299,9 @@ export default function ProfilePage() {
                         href={user.behance_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-between h-[58px] px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent hover:border-white/20 transition-all group"
+                        className="flex-1 flex items-center justify-between h-[58px] px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent hover:border-white/20 transition-all group min-w-0"
                       >
-                        <span className="text-white/80 font-montserrat text-sm">
+                        <span className="text-white/80 font-montserrat text-sm truncate mr-2" title={user.behance_url}>
                           {user.behance_url}
                         </span>
                         <svg
@@ -330,9 +331,30 @@ export default function ProfilePage() {
             ) : (
               // Projects Tab
               <div className="space-y-6">
-                <h2 className="text-2xl font-unbounded text-white mb-6">
-                  Мои проекты ({userProjects.length})
-                </h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-unbounded text-white">
+                    Мои проекты ({userProjects.length})
+                  </h2>
+                  <Link
+                    href="/projects/create"
+                    className="w-12 h-12 flex items-center justify-center rounded-full bg-[#00A851] hover:bg-[#008f45] transition-colors"
+                    title="Добавить проект"
+                  >
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </Link>
+                </div>
 
                 {userProjects.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

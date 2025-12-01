@@ -45,6 +45,7 @@ export function LoginForm() {
             {...register('email')}
             placeholder="Email"
             disabled={isPending}
+            autoComplete="email"
             className="font-unbounded font-medium text-[18px] leading-[24px] text-white bg-transparent border-none outline-none flex-1 placeholder:text-[#808080]"
           />
         </div>
@@ -69,6 +70,7 @@ export function LoginForm() {
               {...register('password')}
               placeholder="Пароль"
               disabled={isPending}
+              autoComplete="current-password"
               className="font-unbounded font-medium text-[18px] leading-[24px] text-white bg-transparent border-none outline-none flex-1 placeholder:text-[#808080]"
             />
           </div>

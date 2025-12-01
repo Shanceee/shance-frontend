@@ -98,6 +98,7 @@ export function RegisterForm() {
                     {...formRegister('email')}
                     placeholder="Email"
                     disabled={isPending}
+                    autoComplete="email"
                     className="font-unbounded font-medium text-[18px] leading-[24px] text-white bg-transparent border-none outline-none flex-1 placeholder:text-[#808080]"
                   />
                 </div>
@@ -148,6 +149,7 @@ export function RegisterForm() {
                     {...formRegister('username')}
                     placeholder="Имя пользователя"
                     disabled={isPending}
+                    autoComplete="username"
                     className="font-unbounded font-medium text-[18px] leading-[24px] text-white bg-transparent border-none outline-none flex-1 placeholder:text-[#808080]"
                   />
                 </div>
@@ -179,6 +181,7 @@ export function RegisterForm() {
                       {...formRegister('password')}
                       placeholder="Пароль"
                       disabled={isPending}
+                      autoComplete="new-password"
                       className="font-unbounded font-medium text-[18px] leading-[24px] text-white bg-transparent border-none outline-none flex-1 placeholder:text-[#808080]"
                     />
                   </div>
@@ -218,6 +221,7 @@ export function RegisterForm() {
                       {...formRegister('password_confirm')}
                       placeholder="Подтвердите пароль"
                       disabled={isPending}
+                      autoComplete="new-password"
                       className="font-unbounded font-medium text-[18px] leading-[24px] text-white bg-transparent border-none outline-none flex-1 placeholder:text-[#808080]"
                     />
                   </div>

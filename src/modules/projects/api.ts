@@ -57,7 +57,4 @@ export const projectsApi = {
 
   deleteImage: (projectId: number, imageId: number): Promise<void> =>
     api.delete<void>(`projects/${projectId}/images/${imageId}/`),
-
-  uploadPhoto: (projectId: number, formData: FormData): Promise<Project> =>
-    api.upload<Project>(`projects/${projectId}/photo/`, formData),
 };

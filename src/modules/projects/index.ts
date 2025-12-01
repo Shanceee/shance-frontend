@@ -12,7 +12,6 @@ export {
   useProjectImages,
   useUploadProjectImage,
   useDeleteProjectImage,
-  useUploadProjectPhoto,
   useSearchProjects,
   useCreateProjectWithImage,
 } from './hooks';

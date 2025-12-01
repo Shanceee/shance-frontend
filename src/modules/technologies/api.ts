@@ -17,20 +17,21 @@ export const technologiesApi = {
   list: (
     params?: TechnologyListParams
   ): Promise<PaginatedResponse<Technology>> =>
-    api.get<PaginatedResponse<Technology>>('technologies/', params),
+    api.get<PaginatedResponse<Technology>>('vacancies/technologies/list/', params),
 
   get: (id: number): Promise<Technology> =>
-    api.get<Technology>(`technologies/${id}/`),
+    api.get<Technology>(`vacancies/technologies/${id}/`),
 
   create: (data: TechnologyCreate): Promise<Technology> =>
-    api.post<Technology>('technologies/', data),
+    api.post<Technology>('vacancies/technologies/', data),
 
   update: (id: number, data: TechnologyCreate): Promise<Technology> =>
-    api.patch<Technology>(`technologies/${id}/`, data),
+    api.patch<Technology>(`vacancies/technologies/${id}/`, data),
 
   delete: (id: number): Promise<void> =>
-    api.delete<void>(`technologies/${id}/`),
+    api.delete<void>(`vacancies/technologies/${id}/`),
 
+  // Note: API doesn't have a dedicated search endpoint, filtering through list params
   search: (query: string): Promise<PaginatedResponse<Technology>> =>
-    api.get<PaginatedResponse<Technology>>('technologies/', { search: query }),
+    api.get<PaginatedResponse<Technology>>('vacancies/technologies/list/', { search: query }),
 };

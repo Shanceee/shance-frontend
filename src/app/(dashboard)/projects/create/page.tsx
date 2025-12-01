@@ -269,7 +269,8 @@ export default function CreateProjectPage() {
         name: name.trim(),
         title: name.trim(),
         description: description.trim(),
-        tag_ids: selectedTags.map(t => t.id),
+        // Note: Tags will be managed separately after project creation
+        // The API doesn't accept tag_ids in the create request
       };
 
       createProjectMutation.mutate({
@@ -302,11 +303,11 @@ export default function CreateProjectPage() {
         }}
       />
 
-      <div className="relative z-10 max-w-[1440px] mx-auto px-16 py-12">
+      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-16 py-6 md:py-12">
         {/* Back navigation */}
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-3 mb-8 text-white/60 hover:text-white transition-colors font-unbounded text-[20px]"
+          className="flex items-center gap-2 md:gap-3 mb-6 md:mb-8 text-white/60 hover:text-white transition-colors font-unbounded text-base md:text-[20px] min-h-[44px]"
         >
           <svg
             width="24"
@@ -318,12 +319,13 @@ export default function CreateProjectPage() {
           >
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
-          Вернуться к выбору
+          <span className="hidden sm:inline">Вернуться к выбору</span>
+          <span className="sm:hidden">Назад</span>
         </button>
 
         {/* Title */}
         <h1
-          className="font-unbounded text-[18px] font-medium mb-10"
+          className="font-unbounded text-base md:text-[18px] font-medium mb-6 md:mb-10"
           style={{
             background:
               'linear-gradient(0deg, rgba(88,88,88,0.3) 0%, rgba(194,194,194,1) 100%)',
@@ -335,10 +337,10 @@ export default function CreateProjectPage() {
           Редактирование проекта
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-10">
+        <form onSubmit={handleSubmit} className="space-y-6 md:space-y-10">
           {/* Cover image upload */}
           <div
-            className={`w-full h-[463px] rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all ${
+            className={`w-full h-[250px] sm:h-[350px] md:h-[463px] rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all ${
               isDragging ? 'scale-[0.98]' : ''
             }`}
             style={{
@@ -360,7 +362,7 @@ export default function CreateProjectPage() {
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="font-miracode text-[16px] text-white">
+                  <span className="font-miracode text-sm md:text-[16px] text-white px-4 text-center">
                     Нажмите для изменения
                   </span>
                 </div>
@@ -374,10 +376,11 @@ export default function CreateProjectPage() {
                   fill="none"
                   stroke="rgba(255,255,255,0.6)"
                   strokeWidth="4"
+                  className="w-6 h-6 sm:w-8 sm:h-8"
                 >
                   <path d="M16 8v16M8 16h16" />
                 </svg>
-                <p className="font-miracode text-[16px] text-white mt-4">
+                <p className="font-miracode text-sm md:text-[16px] text-white mt-4 px-4 text-center">
                   Перетащите, чтобы добавить...
                 </p>
               </>
@@ -391,15 +394,15 @@ export default function CreateProjectPage() {
             />
           </div>
 
-          {/* Two column layout */}
-          <div className="grid grid-cols-2 gap-8">
+          {/* Two column layout - becomes single column on mobile */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             {/* Left column */}
-            <div className="space-y-8">
+            <div className="space-y-6 md:space-y-8">
               {/* Name */}
               <div>
                 <label
                   htmlFor="name"
-                  className="block font-unbounded text-[24px] mb-3"
+                  className="block font-unbounded text-lg md:text-[24px] mb-2 md:mb-3"
                 >
                   Название
                 </label>
@@ -409,7 +412,7 @@ export default function CreateProjectPage() {
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="Введите"
-                  className="w-full bg-white/5 rounded-xl px-4 py-3 font-miracode text-[18px] text-white placeholder:text-[#929292] focus:outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full bg-white/5 rounded-xl px-4 py-3 md:py-3 font-miracode text-base md:text-[18px] text-white placeholder:text-[#929292] focus:outline-none focus:ring-2 focus:ring-white/20 min-h-[44px]"
                   required
                 />
               </div>
@@ -418,7 +421,7 @@ export default function CreateProjectPage() {
               <div>
                 <label
                   htmlFor="description"
-                  className="block font-unbounded text-[24px] mb-3"
+                  className="block font-unbounded text-lg md:text-[24px] mb-2 md:mb-3"
                 >
                   Описание
                 </label>
@@ -428,14 +431,14 @@ export default function CreateProjectPage() {
                   onChange={e => setDescription(e.target.value)}
                   placeholder="Расскажите о функционале"
                   rows={6}
-                  className="w-full bg-white/5 rounded-xl px-4 py-3 font-miracode text-[18px] text-white placeholder:text-[#929292] focus:outline-none focus:ring-2 focus:ring-white/20 resize-none"
+                  className="w-full bg-white/5 rounded-xl px-4 py-3 font-miracode text-base md:text-[18px] text-white placeholder:text-[#929292] focus:outline-none focus:ring-2 focus:ring-white/20 resize-none"
                   required
                 />
               </div>
 
               {/* Team members */}
               <div>
-                <label className="block font-unbounded text-[24px] mb-3">
+                <label className="block font-unbounded text-lg md:text-[24px] mb-2 md:mb-3">
                   Добавить людей в проект
                 </label>
 
@@ -450,7 +453,7 @@ export default function CreateProjectPage() {
                     }}
                     onFocus={() => setShowUserDropdown(true)}
                     placeholder="Поиск..."
-                    className="w-full bg-white/[0.02] border border-white/10 rounded-[10px] h-[52px] px-4 pl-12 font-miracode text-[16px] text-white placeholder:text-[#929292] focus:outline-none focus:border-white/20"
+                    className="w-full bg-white/[0.02] border border-white/10 rounded-[10px] h-[52px] px-4 pl-12 font-miracode text-sm md:text-[16px] text-white placeholder:text-[#929292] focus:outline-none focus:border-white/20"
                   />
                   <svg
                     className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40"
@@ -472,7 +475,7 @@ export default function CreateProjectPage() {
                             key={user.id}
                             type="button"
                             onClick={() => handleAddTeamMember(user)}
-                            className="w-full px-4 py-3 text-left hover:bg-white/5 transition-colors font-miracode text-[14px]"
+                            className="w-full px-4 py-3 text-left hover:bg-white/5 transition-colors font-miracode text-sm md:text-[14px] min-h-[44px]"
                           >
                             {user.first_name} {user.last_name} ({user.email})
                           </button>
@@ -486,10 +489,10 @@ export default function CreateProjectPage() {
                   {teamMembers.map(member => (
                     <div
                       key={member.user.id}
-                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex items-center gap-4"
+                      className="bg-white/5 border border-white/10 rounded-xl px-3 md:px-4 py-3 flex items-center gap-2 md:gap-4"
                     >
                       {/* Avatar */}
-                      <div className="w-[34px] h-[34px] rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
+                      <div className="w-[34px] h-[34px] rounded-full bg-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
                         {member.user.avatar ? (
                           <Image
                             src={member.user.avatar}
@@ -506,7 +509,7 @@ export default function CreateProjectPage() {
                       </div>
 
                       {/* Name */}
-                      <span className="flex-1 font-miracode text-[16px]">
+                      <span className="flex-1 font-miracode text-sm md:text-[16px] truncate">
                         {member.user.first_name} {member.user.last_name}
                       </span>
 
@@ -516,7 +519,7 @@ export default function CreateProjectPage() {
                         onChange={e =>
                           handleMemberRoleChange(member.user.id, e.target.value)
                         }
-                        className="bg-white/5 border border-white/10 rounded-lg px-3 py-1 font-miracode text-[14px] focus:outline-none focus:border-white/20"
+                        className="bg-white/5 border border-white/10 rounded-lg px-2 md:px-3 py-1 font-miracode text-xs md:text-[14px] focus:outline-none focus:border-white/20 min-h-[44px]"
                       >
                         <option value="member">Участник</option>
                         <option value="lead">Лидер</option>
@@ -528,7 +531,7 @@ export default function CreateProjectPage() {
                       <button
                         type="button"
                         onClick={() => handleRemoveTeamMember(member.user.id)}
-                        className="text-white/40 hover:text-red-400 transition-colors"
+                        className="text-white/40 hover:text-red-400 transition-colors p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
                       >
                         <svg
                           width="20"
@@ -548,10 +551,10 @@ export default function CreateProjectPage() {
             </div>
 
             {/* Right column */}
-            <div className="space-y-8">
+            <div className="space-y-6 md:space-y-8">
               {/* Tags */}
               <div>
-                <label className="block font-unbounded text-[24px] mb-3">
+                <label className="block font-unbounded text-lg md:text-[24px] mb-2 md:mb-3">
                   Тэги
                 </label>
 
@@ -559,19 +562,19 @@ export default function CreateProjectPage() {
                   {selectedTags.map(tag => (
                     <div
                       key={tag.id}
-                      className="bg-[#666666]/30 border-2 border-transparent rounded-xl px-5 py-3 flex items-center gap-2"
+                      className="bg-[#666666]/30 border-2 border-transparent rounded-xl px-4 md:px-5 py-2.5 md:py-3 flex items-center gap-2"
                       style={{
                         borderImage:
                           'linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05)) 1',
                       }}
                     >
-                      <span className="font-miracode text-[16px] text-[#929292]">
+                      <span className="font-miracode text-sm md:text-[16px] text-[#929292]">
                         {tag.name}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleRemoveTag(tag.id)}
-                        className="text-white/40 hover:text-red-400 transition-colors"
+                        className="text-white/40 hover:text-red-400 transition-colors p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
                       >
                         <svg
                           width="16"
@@ -592,7 +595,7 @@ export default function CreateProjectPage() {
                     <button
                       type="button"
                       onClick={() => setShowTagDropdown(!showTagDropdown)}
-                      className="bg-[#666666]/30 border-2 border-transparent rounded-xl px-5 py-3 hover:bg-[#666666]/40 transition-colors"
+                      className="bg-[#666666]/30 border-2 border-transparent rounded-xl px-4 md:px-5 py-2.5 md:py-3 hover:bg-[#666666]/40 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                     >
                       <svg
                         width="16"
@@ -607,13 +610,13 @@ export default function CreateProjectPage() {
                     </button>
 
                     {showTagDropdown && (
-                      <div className="absolute top-full left-0 mt-2 w-[300px] bg-[#2a2a2a] border border-white/10 rounded-xl p-2 z-20">
+                      <div className="absolute top-full left-0 mt-2 w-[calc(100vw-2rem)] sm:w-[300px] bg-[#2a2a2a] border border-white/10 rounded-xl p-2 z-20">
                         <input
                           type="text"
                           value={tagSearchQuery}
                           onChange={e => setTagSearchQuery(e.target.value)}
                           placeholder="Поиск тэгов..."
-                          className="w-full bg-white/5 rounded-lg px-3 py-2 mb-2 font-miracode text-[14px] focus:outline-none"
+                          className="w-full bg-white/5 rounded-lg px-3 py-2 mb-2 font-miracode text-sm md:text-[14px] focus:outline-none min-h-[44px]"
                         />
                         <div className="max-h-[200px] overflow-y-auto">
                           {availableTags.map(tag => (
@@ -621,7 +624,7 @@ export default function CreateProjectPage() {
                               key={tag.id}
                               type="button"
                               onClick={() => handleAddTag(tag)}
-                              className="w-full px-3 py-2 text-left hover:bg-white/5 rounded font-miracode text-[14px]"
+                              className="w-full px-3 py-2 text-left hover:bg-white/5 rounded font-miracode text-sm md:text-[14px] min-h-[44px]"
                             >
                               {tag.name}
                             </button>
@@ -635,7 +638,7 @@ export default function CreateProjectPage() {
 
               {/* Technologies (Resources) */}
               <div>
-                <label className="block font-unbounded text-[24px] mb-3">
+                <label className="block font-unbounded text-lg md:text-[24px] mb-2 md:mb-3">
                   Ресурсы
                 </label>
 
@@ -643,15 +646,15 @@ export default function CreateProjectPage() {
                   {selectedTechnologies.map(tech => (
                     <div
                       key={tech.id}
-                      className="bg-[#666666]/30 border-2 border-transparent rounded-xl px-5 py-3 flex items-center gap-2"
+                      className="bg-[#666666]/30 border-2 border-transparent rounded-xl px-4 md:px-5 py-2.5 md:py-3 flex items-center gap-2"
                     >
-                      <span className="font-miracode text-[16px] text-[#929292]">
+                      <span className="font-miracode text-sm md:text-[16px] text-[#929292]">
                         {tech.name}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleRemoveTechnology(tech.id)}
-                        className="text-white/40 hover:text-red-400 transition-colors"
+                        className="text-white/40 hover:text-red-400 transition-colors p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
                       >
                         <svg
                           width="16"
@@ -672,7 +675,7 @@ export default function CreateProjectPage() {
                     <button
                       type="button"
                       onClick={() => setShowTechDropdown(!showTechDropdown)}
-                      className="bg-[#666666]/30 border-2 border-transparent rounded-xl px-5 py-3 hover:bg-[#666666]/40 transition-colors"
+                      className="bg-[#666666]/30 border-2 border-transparent rounded-xl px-4 md:px-5 py-2.5 md:py-3 hover:bg-[#666666]/40 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                     >
                       <svg
                         width="16"
@@ -687,13 +690,13 @@ export default function CreateProjectPage() {
                     </button>
 
                     {showTechDropdown && (
-                      <div className="absolute top-full left-0 mt-2 w-[300px] bg-[#2a2a2a] border border-white/10 rounded-xl p-2 z-20">
+                      <div className="absolute top-full left-0 mt-2 w-[calc(100vw-2rem)] sm:w-[300px] bg-[#2a2a2a] border border-white/10 rounded-xl p-2 z-20">
                         <input
                           type="text"
                           value={techSearchQuery}
                           onChange={e => setTechSearchQuery(e.target.value)}
                           placeholder="Поиск технологий..."
-                          className="w-full bg-white/5 rounded-lg px-3 py-2 mb-2 font-miracode text-[14px] focus:outline-none"
+                          className="w-full bg-white/5 rounded-lg px-3 py-2 mb-2 font-miracode text-sm md:text-[14px] focus:outline-none min-h-[44px]"
                         />
                         <div className="max-h-[200px] overflow-y-auto">
                           {availableTechnologies.map(tech => (
@@ -701,7 +704,7 @@ export default function CreateProjectPage() {
                               key={tech.id}
                               type="button"
                               onClick={() => handleAddTechnology(tech)}
-                              className="w-full px-3 py-2 text-left hover:bg-white/5 rounded font-miracode text-[14px]"
+                              className="w-full px-3 py-2 text-left hover:bg-white/5 rounded font-miracode text-sm md:text-[14px] min-h-[44px]"
                             >
                               {tech.name}
                             </button>
@@ -715,21 +718,22 @@ export default function CreateProjectPage() {
 
               {/* Links */}
               <div>
-                <label className="block font-unbounded text-[24px] mb-3">
+                <label className="block font-unbounded text-lg md:text-[24px] mb-2 md:mb-3">
                   Ссылки
                 </label>
 
                 <div className="space-y-3">
                   {links.map(link => (
-                    <div key={link.id} className="flex items-center gap-3">
+                    <div key={link.id} className="flex items-center gap-2 md:gap-3">
                       {/* Icon */}
-                      <div className="w-[52px] h-[52px] bg-white/5 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <div className="w-[44px] sm:w-[52px] h-[44px] sm:h-[52px] bg-white/5 rounded-xl flex items-center justify-center flex-shrink-0">
                         {link.type === 'github' && (
                           <svg
                             width="24"
                             height="24"
                             viewBox="0 0 24 24"
                             fill="currentColor"
+                            className="w-5 h-5 sm:w-6 sm:h-6"
                           >
                             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                           </svg>
@@ -740,6 +744,7 @@ export default function CreateProjectPage() {
                             height="24"
                             viewBox="0 0 24 24"
                             fill="currentColor"
+                            className="w-5 h-5 sm:w-6 sm:h-6"
                           >
                             <path d="M22 7h-7v-2h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14h-8.027c.13 3.211 3.483 3.312 4.588 2.029h3.168zm-7.686-4h4.965c-.105-1.547-1.136-2.219-2.477-2.219-1.466 0-2.277.768-2.488 2.219zm-9.574 6.988h-6.466v-14.967h6.953c5.476.081 5.58 5.444 2.72 6.906 3.461 1.26 3.577 8.061-3.207 8.061zm-3.466-8.988h3.584c2.508 0 2.906-3-.312-3h-3.272v3zm3.391 3h-3.391v3.016h3.341c3.055 0 2.868-3.016.05-3.016z" />
                           </svg>
@@ -752,6 +757,7 @@ export default function CreateProjectPage() {
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="2"
+                            className="w-5 h-5 sm:w-6 sm:h-6"
                           >
                             <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
                           </svg>
@@ -772,14 +778,14 @@ export default function CreateProjectPage() {
                               ? 'https://behance.net/...'
                               : 'https://...'
                         }
-                        className="flex-1 bg-white/5 rounded-xl px-4 py-3 font-miracode text-[16px] text-white placeholder:text-[#929292] focus:outline-none focus:ring-2 focus:ring-white/20"
+                        className="flex-1 bg-white/5 rounded-xl px-3 md:px-4 py-3 font-miracode text-sm md:text-[16px] text-white placeholder:text-[#929292] focus:outline-none focus:ring-2 focus:ring-white/20 min-h-[44px]"
                       />
 
                       {/* Remove button */}
                       <button
                         type="button"
                         onClick={() => handleRemoveLink(link.id)}
-                        className="text-white/40 hover:text-red-400 transition-colors"
+                        className="text-white/40 hover:text-red-400 transition-colors p-2 min-w-[44px] min-h-[44px] flex items-center justify-center flex-shrink-0"
                       >
                         <svg
                           width="20"
@@ -796,25 +802,25 @@ export default function CreateProjectPage() {
                   ))}
 
                   {/* Add link buttons */}
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
                       onClick={() => handleAddLink('external')}
-                      className="px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors font-miracode text-[14px]"
+                      className="px-3 md:px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors font-miracode text-xs md:text-[14px] min-h-[44px]"
                     >
                       + Внешняя ссылка
                     </button>
                     <button
                       type="button"
                       onClick={() => handleAddLink('behance')}
-                      className="px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors font-miracode text-[14px]"
+                      className="px-3 md:px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors font-miracode text-xs md:text-[14px] min-h-[44px]"
                     >
                       + Behance
                     </button>
                     <button
                       type="button"
                       onClick={() => handleAddLink('github')}
-                      className="px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors font-miracode text-[14px]"
+                      className="px-3 md:px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors font-miracode text-xs md:text-[14px] min-h-[44px]"
                     >
                       + GitHub
                     </button>
@@ -825,10 +831,10 @@ export default function CreateProjectPage() {
           </div>
 
           {/* Bottom section */}
-          <div className="grid grid-cols-2 gap-8 pt-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 pt-6 md:pt-8">
             {/* Vacancies */}
             <div>
-              <label className="block font-unbounded text-[24px] mb-3">
+              <label className="block font-unbounded text-lg md:text-[24px] mb-2 md:mb-3">
                 Кого вы ищете в команду?
               </label>
 
@@ -843,12 +849,12 @@ export default function CreateProjectPage() {
                       (e.preventDefault(), handleAddVacancy())
                     }
                     placeholder="Введите вакансию..."
-                    className="flex-1 bg-white/5 rounded-xl px-4 py-3 font-miracode text-[16px] text-white placeholder:text-[#929292] focus:outline-none focus:ring-2 focus:ring-white/20"
+                    className="flex-1 bg-white/5 rounded-xl px-4 py-3 font-miracode text-sm md:text-[16px] text-white placeholder:text-[#929292] focus:outline-none focus:ring-2 focus:ring-white/20 min-h-[44px]"
                   />
                   <button
                     type="button"
                     onClick={handleAddVacancy}
-                    className="px-6 py-3 bg-white/10 rounded-xl hover:bg-white/20 transition-colors font-miracode text-[16px]"
+                    className="px-4 md:px-6 py-3 bg-white/10 rounded-xl hover:bg-white/20 transition-colors font-miracode text-sm md:text-[16px] min-h-[44px]"
                   >
                     Добавить
                   </button>
@@ -858,15 +864,15 @@ export default function CreateProjectPage() {
                   {vacancies.map((vacancy, index) => (
                     <div
                       key={index}
-                      className="bg-white/10 rounded-xl px-5 py-3 flex items-center gap-2"
+                      className="bg-white/10 rounded-xl px-4 md:px-5 py-2.5 md:py-3 flex items-center gap-2"
                     >
-                      <span className="font-miracode text-[16px]">
+                      <span className="font-miracode text-sm md:text-[16px]">
                         {vacancy}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleRemoveVacancy(index)}
-                        className="text-white/40 hover:text-red-400 transition-colors"
+                        className="text-white/40 hover:text-red-400 transition-colors p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
                       >
                         <svg
                           width="16"
@@ -887,7 +893,7 @@ export default function CreateProjectPage() {
 
             {/* Skills */}
             <div>
-              <label className="block font-unbounded text-[24px] mb-3">
+              <label className="block font-unbounded text-lg md:text-[24px] mb-2 md:mb-3">
                 Нужные навыки
               </label>
 
@@ -902,12 +908,12 @@ export default function CreateProjectPage() {
                       (e.preventDefault(), handleAddSkill())
                     }
                     placeholder="Введите навык..."
-                    className="flex-1 bg-white/5 rounded-xl px-4 py-3 font-miracode text-[16px] text-white placeholder:text-[#929292] focus:outline-none focus:ring-2 focus:ring-white/20"
+                    className="flex-1 bg-white/5 rounded-xl px-4 py-3 font-miracode text-sm md:text-[16px] text-white placeholder:text-[#929292] focus:outline-none focus:ring-2 focus:ring-white/20 min-h-[44px]"
                   />
                   <button
                     type="button"
                     onClick={handleAddSkill}
-                    className="px-6 py-3 bg-white/10 rounded-xl hover:bg-white/20 transition-colors font-miracode text-[16px]"
+                    className="px-4 md:px-6 py-3 bg-white/10 rounded-xl hover:bg-white/20 transition-colors font-miracode text-sm md:text-[16px] min-h-[44px]"
                   >
                     Добавить
                   </button>
@@ -917,13 +923,13 @@ export default function CreateProjectPage() {
                   {skills.map((skill, index) => (
                     <div
                       key={index}
-                      className="bg-white/10 rounded-xl px-5 py-3 flex items-center gap-2"
+                      className="bg-white/10 rounded-xl px-4 md:px-5 py-2.5 md:py-3 flex items-center gap-2"
                     >
-                      <span className="font-miracode text-[16px]">{skill}</span>
+                      <span className="font-miracode text-sm md:text-[16px]">{skill}</span>
                       <button
                         type="button"
                         onClick={() => handleRemoveSkill(index)}
-                        className="text-white/40 hover:text-red-400 transition-colors"
+                        className="text-white/40 hover:text-red-400 transition-colors p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
                       >
                         <svg
                           width="16"
@@ -944,11 +950,11 @@ export default function CreateProjectPage() {
           </div>
 
           {/* Submit button */}
-          <div className="flex justify-end pt-8">
+          <div className="flex justify-center lg:justify-end pt-6 md:pt-8">
             <button
               type="submit"
               disabled={createProjectMutation.isPending}
-              className="w-[292px] h-[55px] rounded-[20px] font-unbounded text-[16px] text-white transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-[292px] h-[55px] rounded-[20px] font-unbounded text-sm md:text-[16px] text-white transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background:
                   'linear-gradient(229deg, rgba(35,35,35,1) 0%, rgba(47,131,94,1) 100%)',

@@ -6,7 +6,6 @@ import { Navigation, Pagination } from 'swiper/modules';
 import Image from 'next/image';
 
 import { ProjectData, projectsData } from '@/data/projects';
-import { projectsApi } from '@/modules/projects';
 
 import { ProjectCard } from './ProjectCard';
 
@@ -26,39 +25,10 @@ export function PerfectProjectsSlider({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPerfectProjects = async () => {
-      try {
-        const response = await projectsApi.list({ page_size: 10 });
-
-        // If API returns empty, use mock data
-        if (!response.results || response.results.length === 0) {
-          setProjects(projectsData);
-          return;
-        }
-
-        const mappedProjects = response.results.map(p => ({
-          id: String(p.id),
-          title: p.title || p.name,
-          description: p.description,
-          date: p.created_at
-            ? new Date(p.created_at).toLocaleDateString('ru-RU')
-            : '',
-          imageSrc: p.photo || '/images/faq-image-b3a29d.png',
-          imageAlt: p.title || p.name,
-          tags: p.tags?.map(t => `#${t.name}`) || [],
-        }));
-        setProjects(mappedProjects as ProjectData[]);
-      } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('Ошибка загрузки проектов:', error);
-        }
-        // Fallback to mock data on error
-        setProjects(projectsData);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchPerfectProjects();
+    // Use mock data directly - API requires authentication
+    // In the future, this can be updated to fetch from public API endpoint
+    setProjects(projectsData);
+    setIsLoading(false);
   }, []);
 
   if (isLoading) {

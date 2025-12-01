@@ -15,7 +15,8 @@ export const tagsApi = {
 
   get: (id: number): Promise<Tag> => api.get<Tag>(`tags/${id}/`),
 
-  create: (data: TagCreate): Promise<Tag> => api.post<Tag>('tags/', data),
+  create: (data: TagCreate): Promise<Tag> =>
+    api.post<Tag>('tags/create/', data),
 
   update: (id: number, data: TagCreate): Promise<Tag> =>
     api.patch<Tag>(`tags/${id}/`, data),
@@ -23,5 +24,5 @@ export const tagsApi = {
   delete: (id: number): Promise<void> => api.delete<void>(`tags/${id}/`),
 
   search: (query: string): Promise<PaginatedResponse<Tag>> =>
-    api.get<PaginatedResponse<Tag>>('tags/', { search: query }),
+    api.get<PaginatedResponse<Tag>>('tags/search/', { q: query }),
 };

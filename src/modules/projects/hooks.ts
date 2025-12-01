@@ -42,9 +42,9 @@ export function useInfiniteProjects(
     queryFn: ({ pageParam = 1 }) =>
       projectsApi.list({ ...queryParams, page: pageParam }),
     initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (lastPage, _allPages) => {
       if (!lastPage.next) return undefined;
-      return allPages.length + 1;
+      return _allPages.length + 1;
     },
     enabled,
   });
@@ -164,6 +164,10 @@ export function useUploadProjectImage() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.images(projectId),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
     },
   });
 }
@@ -187,26 +191,6 @@ export function useDeleteProjectImage() {
   });
 }
 
-export function useUploadProjectPhoto() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      projectId,
-      formData,
-    }: {
-      projectId: number;
-      formData: FormData;
-    }) => projectsApi.uploadPhoto(projectId, formData),
-    onSuccess: project => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.projects.detail(project.id),
-      });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-    },
-  });
-}
-
 export function useSearchProjects(query: string, enabled = true) {
   return useQuery({
     queryKey: queryKeys.projects.search(query),
@@ -224,7 +208,7 @@ export function useCreateProjectWithImage(
   options: UseCreateProjectWithImageOptions = {}
 ) {
   const queryClient = useQueryClient();
-  const uploadPhoto = useUploadProjectPhoto();
+  const uploadImage = useUploadProjectImage();
 
   return useMutation({
     mutationFn: async ({
@@ -234,24 +218,38 @@ export function useCreateProjectWithImage(
       projectData: ProjectCreate;
       imageFile?: File;
     }) => {
+      // Step 1: Create the project
       const project = await projectsApi.create(projectData);
 
+      // Step 2: Upload image if provided (using the correct endpoint)
       if (imageFile) {
         const formData = new FormData();
-        formData.append('photo', imageFile);
-        await uploadPhoto.mutateAsync({
-          projectId: project.id,
-          formData,
-        });
+        // Important: The field name must be 'image' not 'photo'
+        formData.append('image', imageFile);
+
+        try {
+          await uploadImage.mutateAsync({
+            projectId: project.id,
+            formData,
+          });
+        } catch (error) {
+          console.error('Failed to upload project image:', error);
+          // Don't throw - project was created successfully
+          // Image upload is optional
+        }
       }
 
       return project;
     },
     onSuccess: project => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(project.id),
+      });
       options.onSuccess?.(project);
     },
     onError: error => {
+      console.error('Failed to create project:', error);
       options.onError?.(error as Error);
     },
   });

@@ -12,17 +12,29 @@ import { authApi } from './api';
 
 export function useCurrentUser() {
   const [hasToken, setHasToken] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setHasToken(!!tokenManager.getToken());
+    // Check token only on client side after mount
+    setIsClient(true);
+    setHasToken(tokenManager.isAuthenticated());
   }, []);
 
   return useQuery({
     queryKey: queryKeys.auth.user,
-    queryFn: authApi.getCurrentUser,
+    queryFn: async () => {
+      // Double-check token exists before making API call
+      if (!tokenManager.isAuthenticated()) {
+        throw new Error('Not authenticated');
+      }
+      return authApi.getCurrentUser();
+    },
     staleTime: 10 * 60 * 1000,
     retry: false,
-    enabled: hasToken,
+    // Only enable query on client-side when we have a token
+    enabled: isClient && hasToken,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -36,7 +48,6 @@ export function useLogin() {
       if (response.user) {
         queryClient.setQueryData<User>(queryKeys.auth.user, response.user);
       }
-      // Navigate first, then invalidate queries
       router.push('/profile');
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.all });
     },
@@ -53,7 +64,6 @@ export function useRegister() {
       if (response.user) {
         queryClient.setQueryData<User>(queryKeys.auth.user, response.user);
       }
-      // Navigate first, then invalidate queries
       router.push('/profile');
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.all });
     },

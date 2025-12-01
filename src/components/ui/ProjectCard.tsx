@@ -215,19 +215,25 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
           {/* Mobile Info Panel - horizontal layout on small screens */}
           <div className="flex lg:hidden gap-2 flex-wrap">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-unbounded text-white/70">Стадия:</span>
+              <span className="text-xs font-unbounded text-white/70">
+                Стадия:
+              </span>
               <span className="text-xs font-unbounded text-white px-2 py-1 rounded-full bg-[#2a2a2a] border border-white/20">
                 {project.stage || 'прототип'}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-unbounded text-white/70">Статус:</span>
+              <span className="text-xs font-unbounded text-white/70">
+                Статус:
+              </span>
               <span className="text-xs font-unbounded text-white px-2 py-1 rounded-full bg-[#2a2a2a] border border-white/20">
                 {project.status || 'прототип'}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-unbounded text-white/70">Команда:</span>
+              <span className="text-xs font-unbounded text-white/70">
+                Команда:
+              </span>
               <span className="text-xs font-unbounded text-white px-2 py-1 rounded-full bg-[#2a2a2a] border border-white/20">
                 {project.teamSize || 'до 20 чел'}
               </span>

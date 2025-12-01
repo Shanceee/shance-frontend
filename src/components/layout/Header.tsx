@@ -19,6 +19,7 @@ export function Header() {
                 alt="Shance Logo"
                 fill
                 className="object-contain"
+                priority
               />
             </div>
             <span className="text-white text-xl font-bold font-unbounded">
