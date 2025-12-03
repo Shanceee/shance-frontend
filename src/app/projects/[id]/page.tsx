@@ -167,7 +167,7 @@ export default function ProjectDetailPage() {
   // Loading state
   if (isLoadingApi && numericId) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#232323] flex items-center justify-center">
         <BackgroundElements />
         <StaticHeader />
         <div className="relative z-10 text-center px-5 pt-24">
@@ -181,7 +181,7 @@ export default function ProjectDetailPage() {
   // Handle not found
   if (!project || !displayData) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#232323] flex items-center justify-center">
         <BackgroundElements />
         <StaticHeader />
         <div className="relative z-10 text-center px-5 pt-24">
@@ -203,7 +203,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-white">
+    <div className="min-h-screen bg-[#232323] text-white">
       <BackgroundElements />
       <StaticHeader />
 

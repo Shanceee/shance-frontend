@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 
 /**
  * Authentication End-to-End Tests
- * 
+ *
  * Test Coverage:
  * 1. Login Flow - valid/invalid credentials, form validation, redirect after login
  * 2. Protected Routes - unauthenticated redirect, no infinite loops
@@ -32,7 +32,11 @@ async function clearAuth(page: Page) {
 }
 
 // Helper function to set authentication tokens
-async function setAuthTokens(page: Page, accessToken: string, refreshToken: string) {
+async function setAuthTokens(
+  page: Page,
+  accessToken: string,
+  refreshToken: string
+) {
   await page.evaluate(
     ({ access, refresh }) => {
       localStorage.setItem('shance_jwt_token', access);
@@ -79,10 +83,14 @@ test.describe('Authentication Flow', () => {
       await expect(page.locator('a[href="/register"]')).toBeVisible();
 
       // Check privacy policy link
-      await expect(page.getByText('Политикой конфиденциальности')).toBeVisible();
+      await expect(
+        page.getByText('Политикой конфиденциальности')
+      ).toBeVisible();
     });
 
-    test('should show validation errors for empty form submission', async ({ page }) => {
+    test('should show validation errors for empty form submission', async ({
+      page,
+    }) => {
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
 
@@ -94,7 +102,9 @@ test.describe('Authentication Flow', () => {
       await expect(page.getByText('Введите пароль')).toBeVisible();
     });
 
-    test('should show validation error for invalid email format', async ({ page }) => {
+    test('should show validation error for invalid email format', async ({
+      page,
+    }) => {
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
 
@@ -104,7 +114,9 @@ test.describe('Authentication Flow', () => {
       await page.getByRole('button', { name: 'Войти' }).click();
 
       // Check for email validation error - wait for it to appear
-      await expect(page.getByText(/Некорректный|Invalid email/i)).toBeVisible({ timeout: 5000 });
+      await expect(page.getByText(/Некорректный|Invalid email/i)).toBeVisible({
+        timeout: 5000,
+      });
     });
 
     test('should toggle password visibility', async ({ page }) => {
@@ -121,11 +133,16 @@ test.describe('Authentication Flow', () => {
       await expect(passwordInput).toHaveAttribute('type', 'password');
 
       // Find and click the eye button (it's inside the password container)
-      const eyeButton = page.locator('button').filter({ has: page.locator('img') }).nth(0);
+      const eyeButton = page
+        .locator('button')
+        .filter({ has: page.locator('img') })
+        .nth(0);
       await eyeButton.click();
 
       // Password should be visible now (type="text")
-      await expect(page.locator('input').filter({ hasText: '' }).first()).toBeVisible();
+      await expect(
+        page.locator('input').filter({ hasText: '' }).first()
+      ).toBeVisible();
     });
 
     test('should handle invalid credentials gracefully', async ({ page }) => {
@@ -133,8 +150,12 @@ test.describe('Authentication Flow', () => {
       await page.waitForLoadState('networkidle');
 
       // Enter invalid credentials
-      await page.getByRole('textbox', { name: 'Email' }).fill(INVALID_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(INVALID_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Email' })
+        .fill(INVALID_USER.email);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(INVALID_USER.password);
 
       // Submit form
       await page.getByRole('button', { name: 'Войти' }).click();
@@ -151,7 +172,9 @@ test.describe('Authentication Flow', () => {
       expect(tokens.refreshToken).toBeNull();
     });
 
-    test('should successfully login with valid credentials', async ({ page }) => {
+    test('should successfully login with valid credentials', async ({
+      page,
+    }) => {
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
 
@@ -176,7 +199,9 @@ test.describe('Authentication Flow', () => {
       expect(tokens.accessToken).not.toBe('null');
     });
 
-    test('should redirect to profile if already authenticated', async ({ page }) => {
+    test('should redirect to profile if already authenticated', async ({
+      page,
+    }) => {
       // First, login to get tokens
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
@@ -218,7 +243,9 @@ test.describe('Authentication Flow', () => {
   });
 
   test.describe('Protected Routes', () => {
-    test('should redirect unauthenticated user to login from profile page', async ({ page }) => {
+    test('should redirect unauthenticated user to login from profile page', async ({
+      page,
+    }) => {
       await page.goto('/profile');
 
       // Should be redirected to login
@@ -226,7 +253,9 @@ test.describe('Authentication Flow', () => {
       await expect(page).toHaveURL(/\/login/);
     });
 
-    test('should redirect unauthenticated user to login from dashboard routes', async ({ page }) => {
+    test('should redirect unauthenticated user to login from dashboard routes', async ({
+      page,
+    }) => {
       // Test main protected route
       await clearAuth(page);
       await page.goto('/profile');
@@ -254,12 +283,16 @@ test.describe('Authentication Flow', () => {
       await expect(emailInput).toBeEnabled();
     });
 
-    test('should allow authenticated user to access protected routes', async ({ page }) => {
+    test('should allow authenticated user to access protected routes', async ({
+      page,
+    }) => {
       // Login first
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.getByRole('textbox', { name: 'Email' }).fill(TEST_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(TEST_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(TEST_USER.password);
       await page.getByRole('button', { name: 'Войти' }).click();
       await page.waitForURL(/\/profile/, { timeout: 15000 });
 
@@ -274,10 +307,14 @@ test.describe('Authentication Flow', () => {
       await expect(page).toHaveURL(/\/profile/);
 
       // Verify dashboard layout is loaded - check for navigation
-      await expect(page.getByRole('navigation')).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole('navigation')).toBeVisible({
+        timeout: 10000,
+      });
     });
 
-    test('should show loading state while verifying authentication', async ({ page }) => {
+    test('should show loading state while verifying authentication', async ({
+      page,
+    }) => {
       // Get valid tokens from login
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
@@ -292,8 +329,14 @@ test.describe('Authentication Flow', () => {
 
       // Loading state might be brief, so we check for either loading or loaded state
       const isLoadingOrLoaded = await Promise.race([
-        page.getByText('Загрузка профиля...').isVisible().catch(() => false),
-        page.getByText('shance').isVisible().catch(() => false),
+        page
+          .getByText('Загрузка профиля...')
+          .isVisible()
+          .catch(() => false),
+        page
+          .getByText('shance')
+          .isVisible()
+          .catch(() => false),
       ]);
 
       expect(isLoadingOrLoaded).toBeTruthy();
@@ -306,7 +349,9 @@ test.describe('Authentication Flow', () => {
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.getByRole('textbox', { name: 'Email' }).fill(TEST_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(TEST_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(TEST_USER.password);
       await page.getByRole('button', { name: 'Войти' }).click();
       await page.waitForURL(/\/profile/, { timeout: 15000 });
       await page.waitForLoadState('networkidle');
@@ -331,12 +376,16 @@ test.describe('Authentication Flow', () => {
       expect(tokensAfterLogout.refreshToken).toBeNull();
     });
 
-    test('should not be able to access protected routes after logout', async ({ page }) => {
+    test('should not be able to access protected routes after logout', async ({
+      page,
+    }) => {
       // Login
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.getByRole('textbox', { name: 'Email' }).fill(TEST_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(TEST_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(TEST_USER.password);
       await page.getByRole('button', { name: 'Войти' }).click();
       await page.waitForURL(/\/profile/, { timeout: 15000 });
       await page.waitForLoadState('networkidle');
@@ -359,7 +408,9 @@ test.describe('Authentication Flow', () => {
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.getByRole('textbox', { name: 'Email' }).fill(TEST_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(TEST_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(TEST_USER.password);
       await page.getByRole('button', { name: 'Войти' }).click();
       await page.waitForURL(/\/profile/, { timeout: 15000 });
       await page.waitForLoadState('networkidle');
@@ -377,7 +428,9 @@ test.describe('Authentication Flow', () => {
   });
 
   test.describe('Session Persistence', () => {
-    test('should persist authentication after page reload', async ({ page }) => {
+    test('should persist authentication after page reload', async ({
+      page,
+    }) => {
       // Login
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
@@ -399,11 +452,17 @@ test.describe('Authentication Flow', () => {
 
       // Tokens should still exist
       const tokensAfterReload = await getTokens(page);
-      expect(tokensAfterReload.accessToken).toBe(tokensBeforeReload.accessToken);
-      expect(tokensAfterReload.refreshToken).toBe(tokensBeforeReload.refreshToken);
+      expect(tokensAfterReload.accessToken).toBe(
+        tokensBeforeReload.accessToken
+      );
+      expect(tokensAfterReload.refreshToken).toBe(
+        tokensBeforeReload.refreshToken
+      );
     });
 
-    test('should persist authentication across navigation', async ({ page }) => {
+    test('should persist authentication across navigation', async ({
+      page,
+    }) => {
       // Login
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
@@ -452,7 +511,9 @@ test.describe('Authentication Flow', () => {
   });
 
   test.describe('Token Management', () => {
-    test('should store valid tokens in localStorage after login', async ({ page }) => {
+    test('should store valid tokens in localStorage after login', async ({
+      page,
+    }) => {
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.locator('input[type="email"]').fill(TEST_USER.email);
@@ -498,7 +559,9 @@ test.describe('Authentication Flow', () => {
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.getByRole('textbox', { name: 'Email' }).fill(TEST_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(TEST_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(TEST_USER.password);
       await page.getByRole('button', { name: 'Войти' }).click();
       await page.waitForURL(/\/profile/, { timeout: 15000 });
       await page.waitForLoadState('networkidle');
@@ -520,7 +583,9 @@ test.describe('Authentication Flow', () => {
   });
 
   test.describe('Navigation and UX', () => {
-    test('should navigate to registration page from login', async ({ page }) => {
+    test('should navigate to registration page from login', async ({
+      page,
+    }) => {
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
 
@@ -540,18 +605,24 @@ test.describe('Authentication Flow', () => {
       await expect(privacyLink).toHaveText(/Политикой конфиденциальности/);
     });
 
-    test('should display header navigation on authenticated pages', async ({ page }) => {
+    test('should display header navigation on authenticated pages', async ({
+      page,
+    }) => {
       // Login
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.getByRole('textbox', { name: 'Email' }).fill(TEST_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(TEST_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(TEST_USER.password);
       await page.getByRole('button', { name: 'Войти' }).click();
       await page.waitForURL(/\/profile/, { timeout: 15000 });
       await page.waitForLoadState('networkidle');
 
       // Check header navigation
-      await expect(page.getByRole('navigation')).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole('navigation')).toBeVisible({
+        timeout: 10000,
+      });
 
       // Check navigation links
       await expect(page.getByRole('link', { name: /Главная/i })).toBeVisible();
@@ -563,7 +634,9 @@ test.describe('Authentication Flow', () => {
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.getByRole('textbox', { name: 'Email' }).fill(TEST_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(TEST_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(TEST_USER.password);
       await page.getByRole('button', { name: 'Войти' }).click();
       await page.waitForURL(/\/profile/, { timeout: 15000 });
       await page.waitForLoadState('networkidle');
@@ -572,7 +645,9 @@ test.describe('Authentication Flow', () => {
       await page.getByRole('button', { name: 'Settings' }).click();
 
       // Settings menu should be visible
-      await expect(page.getByRole('button', { name: 'Настройки' })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: 'Настройки' })
+      ).toBeVisible();
       await expect(page.getByRole('button', { name: 'Выйти' })).toBeVisible();
     });
   });
@@ -580,14 +655,16 @@ test.describe('Authentication Flow', () => {
   test.describe('Error Handling', () => {
     test('should handle network errors gracefully', async ({ page }) => {
       // Intercept API calls and simulate network error
-      await page.route(`${API_URL}/auth/login/`, (route) => {
+      await page.route(`${API_URL}/auth/login/`, route => {
         route.abort('failed');
       });
 
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.getByRole('textbox', { name: 'Email' }).fill(TEST_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(TEST_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(TEST_USER.password);
       await page.getByRole('button', { name: 'Войти' }).click();
 
       // Wait for request to fail
@@ -599,7 +676,7 @@ test.describe('Authentication Flow', () => {
 
     test('should handle API error responses', async ({ page }) => {
       // Intercept API calls and return error response
-      await page.route(`${API_URL}/auth/login/`, (route) => {
+      await page.route(`${API_URL}/auth/login/`, route => {
         route.fulfill({
           status: 400,
           contentType: 'application/json',
@@ -610,7 +687,9 @@ test.describe('Authentication Flow', () => {
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.getByRole('textbox', { name: 'Email' }).fill(TEST_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(TEST_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(TEST_USER.password);
       await page.getByRole('button', { name: 'Войти' }).click();
 
       // Wait for request to complete
@@ -622,15 +701,17 @@ test.describe('Authentication Flow', () => {
 
     test('should handle slow API responses', async ({ page }) => {
       // Intercept API calls and add delay
-      await page.route(`${API_URL}/auth/login/`, async (route) => {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+      await page.route(`${API_URL}/auth/login/`, async route => {
+        await new Promise(resolve => setTimeout(resolve, 3000));
         await route.continue();
       });
 
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
       await page.getByRole('textbox', { name: 'Email' }).fill(TEST_USER.email);
-      await page.getByRole('textbox', { name: 'Пароль' }).fill(TEST_USER.password);
+      await page
+        .getByRole('textbox', { name: 'Пароль' })
+        .fill(TEST_USER.password);
       await page.getByRole('button', { name: 'Войти' }).click();
 
       // Should show loading state

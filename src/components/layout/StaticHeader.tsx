@@ -189,37 +189,32 @@ export function StaticHeader() {
           </div>
 
           {/* Мобильное меню */}
-          <div className="md:hidden flex items-center space-x-4">
+          <div className="md:hidden flex items-center space-x-3">
             {!isMounted || isLoading ? (
               <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : isAuthenticated && user ? (
               <button
                 onClick={handleProfileClick}
-                className="flex items-center space-x-2 px-3 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 font-montserrat"
+                className="relative w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/20 hover:border-white/40 transition-all duration-300 hover:scale-105"
               >
-                <div className="relative w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
-                  {user.avatar ? (
-                    <Image
-                      src={getImageUrl(user.avatar)}
-                      alt="Avatar"
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#00A851] to-[#008f45] flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-white">
-                        {user.first_name?.charAt(0) ||
-                          user.username?.charAt(0)?.toUpperCase() ||
-                          user.email?.charAt(0)?.toUpperCase() ||
-                          'U'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <span className="text-sm truncate max-w-[100px]">
-                  {user.email}
-                </span>
+                {user.avatar ? (
+                  <Image
+                    src={getImageUrl(user.avatar)}
+                    alt="Avatar"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-[#00A851] to-[#008f45] flex items-center justify-center">
+                    <span className="text-sm font-bold text-white">
+                      {user.first_name?.charAt(0) ||
+                        user.username?.charAt(0)?.toUpperCase() ||
+                        user.email?.charAt(0)?.toUpperCase() ||
+                        'U'}
+                    </span>
+                  </div>
+                )}
               </button>
             ) : (
               <Link
@@ -231,26 +226,18 @@ export function StaticHeader() {
             )}
             <button
               onClick={toggleMenu}
-              className="p-2 text-white hover:bg-white/10 rounded-lg transition-all duration-300"
+              className="w-10 h-10 flex items-center justify-center text-white"
               aria-label="Toggle menu"
             >
-              <div className="w-6 h-6 flex flex-col justify-center items-center">
-                <span
-                  className={`block w-5 h-0.5 bg-white transition-all duration-300 ${
-                    isMenuOpen ? 'rotate-45 translate-y-1' : ''
-                  }`}
-                ></span>
-                <span
-                  className={`block w-5 h-0.5 bg-white transition-all duration-300 mt-1 ${
-                    isMenuOpen ? 'opacity-0' : ''
-                  }`}
-                ></span>
-                <span
-                  className={`block w-5 h-0.5 bg-white transition-all duration-300 mt-1 ${
-                    isMenuOpen ? '-rotate-45 -translate-y-1' : ''
-                  }`}
-                ></span>
-              </div>
+              {isMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
@@ -258,7 +245,7 @@ export function StaticHeader() {
         {/* Мобильное меню выпадающее */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 py-4 border-t border-white/10">
-            <nav className="space-y-4">
+            <nav className="space-y-1">
               {navItems.map(item => (
                 <button
                   key={item.id}
@@ -266,21 +253,57 @@ export function StaticHeader() {
                     item.action();
                     setIsMenuOpen(false);
                   }}
-                  className="block text-white/80 hover:text-white transition-all duration-300 py-2 font-montserrat bg-transparent border-none cursor-pointer text-left w-full"
+                  className="flex items-center space-x-3 text-white/80 hover:text-white hover:bg-white/5 transition-all duration-300 py-3 px-2 rounded-lg font-montserrat bg-transparent border-none cursor-pointer text-left w-full"
                 >
-                  {item.text}
+                  {item.id === 'projects' && (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  )}
+                  {item.id === 'about' && (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  )}
+                  {item.id === 'faq' && (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  )}
+                  <span>{item.text}</span>
                 </button>
               ))}
+
               {isMounted && isAuthenticated && user && (
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsMenuOpen(false);
-                  }}
-                  className="block text-white/80 hover:text-white transition-all duration-300 py-2 font-montserrat bg-transparent border-none cursor-pointer text-left w-full"
-                >
-                  Выйти
-                </button>
+                <>
+                  <div className="border-t border-white/10 my-2" />
+
+                  <button
+                    onClick={() => {
+                      handleProfileClick();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center space-x-3 text-[#00A851] hover:bg-white/5 transition-all duration-300 py-3 px-2 rounded-lg font-montserrat font-medium bg-transparent border-none cursor-pointer text-left w-full"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span>Профиль</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center space-x-3 text-red-400 hover:text-red-300 hover:bg-white/5 transition-all duration-300 py-3 px-2 rounded-lg font-montserrat bg-transparent border-none cursor-pointer text-left w-full"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span>Выйти</span>
+                  </button>
+                </>
               )}
             </nav>
           </div>
