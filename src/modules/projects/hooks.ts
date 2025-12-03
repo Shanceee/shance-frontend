@@ -77,13 +77,17 @@ export function useProject(id: number, enabled = true) {
  * by using data from the public /projects/all/ endpoint
  */
 export function usePublicProject(id: number, enabled = true) {
-  const { data: allProjectsData, isLoading: isLoadingAll } = useAllProjects({ enabled });
+  const { data: allProjectsData, isLoading: isLoadingAll } = useAllProjects({
+    enabled,
+  });
 
   const project = useMemo(() => {
     if (!allProjectsData) return null;
 
     // Handle both paginated response (with .results) and direct array response
-    const projectsArray = allProjectsData.results ?? (Array.isArray(allProjectsData) ? allProjectsData : []);
+    const projectsArray =
+      allProjectsData.results ??
+      (Array.isArray(allProjectsData) ? allProjectsData : []);
 
     return projectsArray.find(p => p.id === id) || null;
   }, [allProjectsData, id]);
@@ -92,7 +96,10 @@ export function usePublicProject(id: number, enabled = true) {
     data: project,
     isLoading: isLoadingAll,
     isError: enabled && !isLoadingAll && allProjectsData && !project,
-    error: enabled && !isLoadingAll && allProjectsData && !project ? new Error('Project not found') : null,
+    error:
+      enabled && !isLoadingAll && allProjectsData && !project
+        ? new Error('Project not found')
+        : null,
   };
 }
 

@@ -20,7 +20,6 @@ export default function DashboardLayout({
   const hasRedirected = useRef(false);
 
   // Only fetch user data if we have a token
-  const hasToken = tokenManager.getToken();
   const { data: user, isLoading, isError } = useCurrentUser();
 
   // Handle all redirects in useEffect to avoid setState during render
@@ -166,8 +165,8 @@ export default function DashboardLayout({
               </Link>
             </nav>
 
-            {/* Settings dropdown */}
-            <div className="relative">
+            {/* Settings dropdown - Desktop only */}
+            <div className="relative hidden md:block">
               <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                 className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300"
@@ -244,12 +243,26 @@ export default function DashboardLayout({
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="p-2 text-white hover:bg-white/10 rounded-lg transition-all duration-300"
-                aria-label="Toggle menu"
-              >
+            <button
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-all duration-300"
+              aria-label="Toggle menu"
+            >
+              {isSettingsOpen ? (
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
                 <svg
                   className="w-6 h-6"
                   fill="none"
@@ -263,18 +276,18 @@ export default function DashboardLayout({
                     d="M4 6h16M4 12h16M4 18h16"
                   />
                 </svg>
-              </button>
-            </div>
+              )}
+            </button>
           </div>
 
           {/* Mobile navigation menu */}
           {isSettingsOpen && (
             <div className="md:hidden border-t border-white/10 py-4">
-              <nav className="space-y-2">
+              <nav className="space-y-1">
                 <Link
                   href="/"
                   onClick={() => setIsSettingsOpen(false)}
-                  className="flex items-center space-x-2 text-white/80 hover:text-white font-montserrat transition-colors py-2"
+                  className="flex items-center space-x-3 text-white/80 hover:text-white hover:bg-white/5 font-montserrat transition-colors py-3 px-2 rounded-lg"
                 >
                   <svg
                     className="w-5 h-5"
@@ -295,7 +308,7 @@ export default function DashboardLayout({
                 <Link
                   href="/projects"
                   onClick={() => setIsSettingsOpen(false)}
-                  className="flex items-center space-x-2 text-white/80 hover:text-white font-montserrat transition-colors py-2"
+                  className="flex items-center space-x-3 text-white/80 hover:text-white hover:bg-white/5 font-montserrat transition-colors py-3 px-2 rounded-lg"
                 >
                   <svg
                     className="w-5 h-5"
@@ -313,12 +326,35 @@ export default function DashboardLayout({
                   <span>Проекты</span>
                 </Link>
 
+                <Link
+                  href="/profile"
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="flex items-center space-x-3 text-[#00A851] hover:bg-white/5 font-montserrat font-medium transition-colors py-3 px-2 rounded-lg"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                  <span>Профиль</span>
+                </Link>
+
+                <div className="border-t border-white/10 my-2" />
+
                 <button
                   onClick={() => {
                     router.push('/settings');
                     setIsSettingsOpen(false);
                   }}
-                  className="flex items-center space-x-2 text-white/80 hover:text-white font-montserrat transition-colors py-2 w-full text-left"
+                  className="flex items-center space-x-3 text-white/80 hover:text-white hover:bg-white/5 font-montserrat transition-colors py-3 px-2 rounded-lg w-full text-left"
                 >
                   <svg
                     className="w-5 h-5"
@@ -345,7 +381,7 @@ export default function DashboardLayout({
                 <button
                   onClick={handleLogout}
                   disabled={logout.isPending}
-                  className="flex items-center space-x-2 text-white/80 hover:text-white font-montserrat transition-colors py-2 w-full text-left disabled:opacity-50"
+                  className="flex items-center space-x-3 text-red-400 hover:text-red-300 hover:bg-white/5 font-montserrat transition-colors py-3 px-2 rounded-lg w-full text-left disabled:opacity-50"
                 >
                   <svg
                     className="w-5 h-5"

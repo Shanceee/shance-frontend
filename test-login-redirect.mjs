@@ -12,7 +12,7 @@
 const API_URL = 'http://185.171.82.179:8000/api/v1';
 const TEST_CREDENTIALS = {
   email: 'eeper03@mail.ru',
-  password: 'egor12345'
+  password: 'egor12345',
 };
 
 console.log('🔍 Testing Login Flow\n');
@@ -38,9 +38,18 @@ async function testLoginAPI() {
 
     const data = await response.json();
     console.log('✅ Login successful!');
-    console.log('   - Access token:', data.access_token ? '✓ Present' : '✗ Missing');
-    console.log('   - Refresh token:', data.refresh_token ? '✓ Present' : '✗ Missing');
-    console.log('   - User data:', data.user ? '✓ Present' : '✗ Missing (optional)');
+    console.log(
+      '   - Access token:',
+      data.access_token ? '✓ Present' : '✗ Missing'
+    );
+    console.log(
+      '   - Refresh token:',
+      data.refresh_token ? '✓ Present' : '✗ Missing'
+    );
+    console.log(
+      '   - User data:',
+      data.user ? '✓ Present' : '✗ Missing (optional)'
+    );
 
     return data;
   } catch (error) {
@@ -56,7 +65,7 @@ async function testUserAPI(accessToken) {
     const response = await fetch(`${API_URL}/users/me/`, {
       method: 'GET',
       headers: {
-        'Authorization': `JWT ${accessToken}`,
+        Authorization: `JWT ${accessToken}`,
         'Content-Type': 'application/json',
       },
     });

@@ -1,5 +1,6 @@
-import { chromium } from 'playwright';
 import { mkdir } from 'fs/promises';
+
+import { chromium } from 'playwright';
 
 async function testResponsive() {
   // Create screenshots directory

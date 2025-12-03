@@ -43,32 +43,28 @@ export default function ProfilePage() {
     <div className="relative">
       {/* Decorative blurred ellipses */}
       <div
-        className="fixed w-[488px] h-[488px] rounded-full opacity-40 pointer-events-none"
+        className="fixed w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] lg:w-[488px] lg:h-[488px] rounded-full opacity-40 pointer-events-none -right-[50px] sm:right-[5%] -top-[100px] sm:-top-[150px]"
         style={{
           background: '#00A851',
           filter: 'blur(244px)',
-          right: '5%',
-          top: '-150px',
         }}
       />
       <div
-        className="fixed w-[488px] h-[488px] rounded-full opacity-40 pointer-events-none"
+        className="fixed w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] lg:w-[488px] lg:h-[488px] rounded-full opacity-40 pointer-events-none -left-[100px] -bottom-[100px]"
         style={{
           background: '#12FF78',
           filter: 'blur(244px)',
-          left: '-100px',
-          bottom: '-100px',
         }}
       />
 
-      <div className="max-w-[1360px] mx-auto px-10 py-10 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[543px_1fr] gap-10">
+      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] xl:grid-cols-[400px_1fr] 2xl:grid-cols-[543px_1fr] gap-6 lg:gap-10">
           {/* Left Card - User Profile */}
-          <aside className="bg-black/30 backdrop-blur-[40px] rounded-[32px] p-8">
-            <div className="flex flex-col gap-9">
+          <aside className="bg-black/30 backdrop-blur-[40px] rounded-[20px] sm:rounded-[24px] lg:rounded-[32px] p-5 sm:p-6 lg:p-8">
+            <div className="flex flex-col gap-6 sm:gap-7 lg:gap-9">
               {/* Profile Image */}
               <div className="flex justify-center">
-                <div className="relative w-[200px] h-[200px] rounded-full overflow-hidden">
+                <div className="relative w-[120px] h-[120px] sm:w-[150px] sm:h-[150px] lg:w-[200px] lg:h-[200px] rounded-full overflow-hidden">
                   {user.avatar ? (
                     <Image
                       src={getImageUrl(user.avatar)}
@@ -79,7 +75,7 @@ export default function ProfilePage() {
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#00A851] to-[#008f45] flex items-center justify-center">
-                      <span className="text-6xl font-unbounded font-bold text-white">
+                      <span className="text-4xl sm:text-5xl lg:text-6xl font-unbounded font-bold text-white">
                         {user.first_name?.charAt(0) ||
                           user.username?.charAt(0)?.toUpperCase() ||
                           user.email?.charAt(0)?.toUpperCase() ||
@@ -91,14 +87,14 @@ export default function ProfilePage() {
               </div>
 
               {/* Name Section (Frame 59) */}
-              <div className="flex flex-col gap-2 text-center">
-                <h1 className="text-2xl font-unbounded text-white">
+              <div className="flex flex-col gap-1 sm:gap-2 text-center">
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-unbounded text-white">
                   {user.first_name && user.last_name
                     ? `${user.first_name} ${user.last_name}`
                     : user.username || 'Имя Фамилия'}
                 </h1>
                 {user.specialization && (
-                  <p className="text-base font-montserrat font-medium text-white">
+                  <p className="text-sm sm:text-base font-montserrat font-medium text-white">
                     {user.specialization}
                   </p>
                 )}
@@ -108,10 +104,10 @@ export default function ProfilePage() {
               <nav className="flex flex-col">
                 <button
                   onClick={() => setActiveTab('info')}
-                  className={`text-left px-6 py-6 transition-all ${
+                  className={`text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-6 transition-all ${
                     activeTab === 'info'
-                      ? 'text-[28px] font-unbounded text-white border-b border-[#B3B3B3]'
-                      : 'text-2xl font-unbounded text-white/60 hover:text-white'
+                      ? 'text-base sm:text-lg lg:text-[28px] font-unbounded text-white border-b border-[#B3B3B3]'
+                      : 'text-sm sm:text-base lg:text-2xl font-unbounded text-white/60 hover:text-white'
                   }`}
                 >
                   Личная информация
@@ -119,10 +115,10 @@ export default function ProfilePage() {
 
                 <button
                   onClick={() => setActiveTab('projects')}
-                  className={`text-left px-6 py-6 transition-all ${
+                  className={`text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-6 transition-all ${
                     activeTab === 'projects'
-                      ? 'text-[28px] font-unbounded text-white border-b border-[#B3B3B3]'
-                      : 'text-2xl font-unbounded text-white/60 hover:text-white'
+                      ? 'text-base sm:text-lg lg:text-[28px] font-unbounded text-white border-b border-[#B3B3B3]'
+                      : 'text-sm sm:text-base lg:text-2xl font-unbounded text-white/60 hover:text-white'
                   }`}
                 >
                   Мои проекты
@@ -132,19 +128,19 @@ export default function ProfilePage() {
           </aside>
 
           {/* Right Card - Content */}
-          <main className="bg-black/30 backdrop-blur-[40px] rounded-[32px] p-8">
+          <main className="bg-black/30 backdrop-blur-[40px] rounded-[20px] sm:rounded-[24px] lg:rounded-[32px] p-5 sm:p-6 lg:p-8">
             {activeTab === 'info' ? (
-              <div className="flex flex-col gap-9">
+              <div className="flex flex-col gap-6 sm:gap-7 lg:gap-9">
                 {/* Two-column grid of fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-9">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 lg:gap-9">
                   {/* Row 1: Имя, Фамилия */}
-                  <div className="flex flex-col gap-2 min-w-0">
-                    <label className="text-base font-montserrat text-[#929292]">
+                  <div className="flex flex-col gap-1 sm:gap-2 min-w-0">
+                    <label className="text-sm sm:text-base font-montserrat text-[#929292]">
                       Имя
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
                       <p
-                        className="text-xl font-unbounded text-white truncate"
+                        className="text-base sm:text-lg lg:text-xl font-unbounded text-white truncate"
                         title={user.first_name || '-'}
                       >
                         {user.first_name || '-'}
@@ -152,13 +148,13 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2 min-w-0">
-                    <label className="text-base font-montserrat text-[#929292]">
+                  <div className="flex flex-col gap-1 sm:gap-2 min-w-0">
+                    <label className="text-sm sm:text-base font-montserrat text-[#929292]">
                       Фамилия
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
                       <p
-                        className="text-xl font-unbounded text-white truncate"
+                        className="text-base sm:text-lg lg:text-xl font-unbounded text-white truncate"
                         title={user.last_name || '-'}
                       >
                         {user.last_name || '-'}
@@ -167,13 +163,13 @@ export default function ProfilePage() {
                   </div>
 
                   {/* Row 2: Сфера деятельности (full width in design, using 2 cols) */}
-                  <div className="flex flex-col gap-2 md:col-span-2 min-w-0">
-                    <label className="text-base font-montserrat text-[#929292]">
+                  <div className="flex flex-col gap-1 sm:gap-2 sm:col-span-2 min-w-0">
+                    <label className="text-sm sm:text-base font-montserrat text-[#929292]">
                       Сфера деятельности
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
                       <p
-                        className="text-xl font-unbounded text-white truncate"
+                        className="text-base sm:text-lg lg:text-xl font-unbounded text-white truncate"
                         title={user.specialization || '-'}
                       >
                         {user.specialization || '-'}
@@ -182,32 +178,34 @@ export default function ProfilePage() {
                   </div>
 
                   {/* Row 3: Теги */}
-                  <div className="flex flex-col gap-2 md:col-span-2 min-w-0">
-                    <label className="text-base font-montserrat text-[#929292]">
+                  <div className="flex flex-col gap-1 sm:gap-2 sm:col-span-2 min-w-0">
+                    <label className="text-sm sm:text-base font-montserrat text-[#929292]">
                       Теги
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
                       {user.tags && user.tags.length > 0 ? (
                         <p
-                          className="text-xl font-unbounded text-white truncate"
+                          className="text-base sm:text-lg lg:text-xl font-unbounded text-white truncate"
                           title={user.tags.map(tag => `#${tag.name}`).join(' ')}
                         >
                           {user.tags.map(tag => `#${tag.name}`).join(' ')}
                         </p>
                       ) : (
-                        <p className="text-xl font-unbounded text-white">-</p>
+                        <p className="text-base sm:text-lg lg:text-xl font-unbounded text-white">
+                          -
+                        </p>
                       )}
                     </div>
                   </div>
 
                   {/* Row 4: Страна, Город */}
-                  <div className="flex flex-col gap-2 min-w-0">
-                    <label className="text-base font-montserrat text-[#929292]">
+                  <div className="flex flex-col gap-1 sm:gap-2 min-w-0">
+                    <label className="text-sm sm:text-base font-montserrat text-[#929292]">
                       Страна
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
                       <p
-                        className="text-xl font-unbounded text-white truncate"
+                        className="text-base sm:text-lg lg:text-xl font-unbounded text-white truncate"
                         title={user.country || '-'}
                       >
                         {user.country || '-'}
@@ -215,13 +213,13 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2 min-w-0">
-                    <label className="text-base font-montserrat text-[#929292]">
+                  <div className="flex flex-col gap-1 sm:gap-2 min-w-0">
+                    <label className="text-sm sm:text-base font-montserrat text-[#929292]">
                       Город
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
                       <p
-                        className="text-xl font-unbounded text-white truncate"
+                        className="text-base sm:text-lg lg:text-xl font-unbounded text-white truncate"
                         title={user.city || '-'}
                       >
                         {user.city || '-'}
@@ -230,13 +228,13 @@ export default function ProfilePage() {
                   </div>
 
                   {/* Row 5: Телефон, Почта */}
-                  <div className="flex flex-col gap-2 min-w-0">
-                    <label className="text-base font-montserrat text-[#929292]">
+                  <div className="flex flex-col gap-1 sm:gap-2 min-w-0">
+                    <label className="text-sm sm:text-base font-montserrat text-[#929292]">
                       Телефон
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
                       <p
-                        className="text-xl font-unbounded text-white truncate"
+                        className="text-base sm:text-lg lg:text-xl font-unbounded text-white truncate"
                         title={user.phone || '-'}
                       >
                         {user.phone || '-'}
@@ -244,13 +242,13 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2 min-w-0">
-                    <label className="text-base font-montserrat text-[#929292]">
+                  <div className="flex flex-col gap-1 sm:gap-2 min-w-0">
+                    <label className="text-sm sm:text-base font-montserrat text-[#929292]">
                       Почта
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
                       <p
-                        className="text-xl font-unbounded text-white truncate"
+                        className="text-base sm:text-lg lg:text-xl font-unbounded text-white truncate"
                         title={user.email || '-'}
                       >
                         {user.email || '-'}
@@ -260,13 +258,13 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Social Links Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-9">
+                <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:gap-9">
                   {/* GitHub Link */}
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     {/* Icon */}
-                    <div className="flex-shrink-0 w-[50px] h-[50px] bg-white/10 rounded-full flex items-center justify-center">
+                    <div className="flex-shrink-0 w-10 h-10 sm:w-[50px] sm:h-[50px] bg-white/10 rounded-full flex items-center justify-center">
                       <svg
-                        className="w-6 h-6 text-white"
+                        className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                         fill="currentColor"
                         viewBox="0 0 24 24"
                       >
@@ -280,16 +278,16 @@ export default function ProfilePage() {
                         href={user.github_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-between h-[58px] px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent hover:border-white/20 transition-all group min-w-0"
+                        className="flex-1 flex items-center justify-between h-[48px] sm:h-[58px] px-4 sm:px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent hover:border-white/20 transition-all group min-w-0"
                       >
                         <span
-                          className="text-white/80 font-montserrat text-sm truncate mr-2"
+                          className="text-white/80 font-montserrat text-xs sm:text-sm truncate mr-2"
                           title={user.github_url}
                         >
                           {user.github_url}
                         </span>
                         <svg
-                          className="w-5 h-5 text-white/60 group-hover:text-white transition-colors"
+                          className="w-4 h-4 sm:w-5 sm:h-5 text-white/60 group-hover:text-white transition-colors flex-shrink-0"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -303,8 +301,8 @@ export default function ProfilePage() {
                         </svg>
                       </a>
                     ) : (
-                      <div className="flex-1 flex items-center h-[58px] px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent">
-                        <span className="text-white/40 font-montserrat text-sm">
+                      <div className="flex-1 flex items-center h-[48px] sm:h-[58px] px-4 sm:px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent">
+                        <span className="text-white/40 font-montserrat text-xs sm:text-sm">
                           Ссылка на гитхаб
                         </span>
                       </div>
@@ -312,11 +310,11 @@ export default function ProfilePage() {
                   </div>
 
                   {/* Behance Link */}
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     {/* Icon */}
-                    <div className="flex-shrink-0 w-[50px] h-[50px] bg-white/10 rounded-full flex items-center justify-center">
+                    <div className="flex-shrink-0 w-10 h-10 sm:w-[50px] sm:h-[50px] bg-white/10 rounded-full flex items-center justify-center">
                       <svg
-                        className="w-6 h-6 text-white"
+                        className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                         fill="currentColor"
                         viewBox="0 0 24 24"
                       >
@@ -330,16 +328,16 @@ export default function ProfilePage() {
                         href={user.behance_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-between h-[58px] px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent hover:border-white/20 transition-all group min-w-0"
+                        className="flex-1 flex items-center justify-between h-[48px] sm:h-[58px] px-4 sm:px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent hover:border-white/20 transition-all group min-w-0"
                       >
                         <span
-                          className="text-white/80 font-montserrat text-sm truncate mr-2"
+                          className="text-white/80 font-montserrat text-xs sm:text-sm truncate mr-2"
                           title={user.behance_url}
                         >
                           {user.behance_url}
                         </span>
                         <svg
-                          className="w-5 h-5 text-white/60 group-hover:text-white transition-colors"
+                          className="w-4 h-4 sm:w-5 sm:h-5 text-white/60 group-hover:text-white transition-colors flex-shrink-0"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -353,8 +351,8 @@ export default function ProfilePage() {
                         </svg>
                       </a>
                     ) : (
-                      <div className="flex-1 flex items-center h-[58px] px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent">
-                        <span className="text-white/40 font-montserrat text-sm">
+                      <div className="flex-1 flex items-center h-[48px] sm:h-[58px] px-4 sm:px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent">
+                        <span className="text-white/40 font-montserrat text-xs sm:text-sm">
                           Ссылка на беханс
                         </span>
                       </div>
@@ -364,18 +362,18 @@ export default function ProfilePage() {
               </div>
             ) : (
               // Projects Tab
-              <div className="space-y-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-unbounded text-white">
+              <div className="space-y-4 sm:space-y-6">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-unbounded text-white">
                     Мои проекты ({userProjects.length})
                   </h2>
                   <Link
                     href="/projects/create"
-                    className="w-12 h-12 flex items-center justify-center rounded-full bg-[#00A851] hover:bg-[#008f45] transition-colors"
+                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-[#00A851] hover:bg-[#008f45] transition-colors"
                     title="Добавить проект"
                   >
                     <svg
-                      className="w-6 h-6 text-white"
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -391,21 +389,21 @@ export default function ProfilePage() {
                 </div>
 
                 {isLoadingProjects ? (
-                  <div className="text-center py-16">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                    <p className="text-white/60 font-montserrat">
+                  <div className="text-center py-10 sm:py-16">
+                    <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-white mx-auto mb-4"></div>
+                    <p className="text-white/60 font-montserrat text-sm sm:text-base">
                       Загрузка проектов...
                     </p>
                   </div>
                 ) : userProjects.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     {userProjects.map(project => (
                       <Link
                         key={project.id}
                         href={`/projects/${project.id}`}
-                        className="bg-white/5 backdrop-blur-sm rounded-[20px] p-6 hover:bg-white/10 transition-all"
+                        className="bg-white/5 backdrop-blur-sm rounded-[16px] sm:rounded-[20px] p-4 sm:p-6 hover:bg-white/10 transition-all"
                       >
-                        <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
+                        <div className="relative w-full h-36 sm:h-48 mb-3 sm:mb-4 rounded-lg overflow-hidden">
                           <Image
                             src={getProjectImageUrl(project)}
                             alt={project.title}
@@ -414,25 +412,25 @@ export default function ProfilePage() {
                             unoptimized
                           />
                         </div>
-                        <h3 className="text-xl font-unbounded text-white mb-2">
+                        <h3 className="text-base sm:text-lg lg:text-xl font-unbounded text-white mb-1 sm:mb-2">
                           {project.title}
                         </h3>
                         {project.subtitle && (
-                          <p className="text-sm font-montserrat text-white/60 mb-3">
+                          <p className="text-xs sm:text-sm font-montserrat text-white/60 mb-2 sm:mb-3">
                             {project.subtitle}
                           </p>
                         )}
                         {project.description && (
-                          <p className="text-sm font-montserrat text-white/80 line-clamp-3">
+                          <p className="text-xs sm:text-sm font-montserrat text-white/80 line-clamp-2 sm:line-clamp-3">
                             {project.description}
                           </p>
                         )}
                         {project.tags && project.tags.length > 0 && (
-                          <div className="mt-4 flex flex-wrap gap-2">
+                          <div className="mt-3 sm:mt-4 flex flex-wrap gap-1.5 sm:gap-2">
                             {project.tags.map(tag => (
                               <span
                                 key={tag.id}
-                                className="px-3 py-1 bg-white/10 rounded-full text-xs font-montserrat text-white/80"
+                                className="px-2 sm:px-3 py-0.5 sm:py-1 bg-white/10 rounded-full text-[10px] sm:text-xs font-montserrat text-white/80"
                               >
                                 #{tag.name}
                               </span>
@@ -443,10 +441,10 @@ export default function ProfilePage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-16 bg-white/5 backdrop-blur-sm rounded-[32px]">
-                    <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="text-center py-10 sm:py-16 bg-white/5 backdrop-blur-sm rounded-[20px] sm:rounded-[32px]">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                       <svg
-                        className="w-8 h-8 text-white/60"
+                        className="w-6 h-6 sm:w-8 sm:h-8 text-white/60"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -459,7 +457,7 @@ export default function ProfilePage() {
                         />
                       </svg>
                     </div>
-                    <p className="text-white/60 font-montserrat mb-4">
+                    <p className="text-white/60 font-montserrat text-sm sm:text-base mb-3 sm:mb-4">
                       У вас пока нет проектов
                     </p>
                   </div>
