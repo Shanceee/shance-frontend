@@ -43,7 +43,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#161419] relative overflow-x-hidden overflow-y-auto">
+    <div className="min-h-screen h-screen bg-[#161419] relative overflow-hidden">
       {/* Decorative blurred ellipses */}
       <div
         className="absolute w-[300px] h-[300px] sm:w-[488px] sm:h-[488px] rounded-full opacity-40 -left-[100px] -top-[50px]"
@@ -60,10 +60,10 @@ export default function LoginPage() {
         }}
       />
 
-      {/* Content container with proper mobile scrolling */}
-      <div className="relative flex flex-col items-center min-h-screen px-4 sm:px-6 py-8 sm:py-0">
+      {/* Content container */}
+      <div className="relative flex flex-col items-center justify-center h-full px-4 sm:px-6 py-4 sm:py-0">
         {/* Logo */}
-        <div className="w-[80px] h-[81px] sm:w-[100px] sm:h-[102px] mt-8 sm:mt-[101px] mb-6 sm:mb-8">
+        <div className="w-[60px] h-[61px] sm:w-[100px] sm:h-[102px] mb-4 sm:mb-8">
           <Image
             src="/images/logo.svg"
             width={100}
