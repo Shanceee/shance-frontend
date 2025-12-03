@@ -6,9 +6,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { projectsData, type ProjectData } from '@/data/projects';
+import { usePublicProject } from '@/modules/projects';
 import { FooterSection } from '@/modules/landing';
 import { BackgroundElements } from '@/components/ui/BackgroundElements';
 import { StaticHeader } from '@/components/layout';
+import { getImageUrl } from '@/lib/utils';
+import type { Project } from '@/types/api';
+
+// Union type for API and mock projects
+type ProjectUnion = Project | ProjectData;
+
+// Type guard to check if project is from API
+function isApiProject(project: ProjectUnion): project is Project {
+  return 'id' in project && typeof project.id === 'number';
+}
 
 interface Achievement {
   id: number;
@@ -50,17 +61,54 @@ export default function ProjectDetailPage() {
 
   const projectId = params.id as string;
 
+  // Parse ID - try as number first for API
+  const numericId = useMemo(() => {
+    const parsed = parseInt(projectId, 10);
+    return isNaN(parsed) ? null : parsed;
+  }, [projectId]);
+
+  // Try to fetch from public API if we have a numeric ID
+  const {
+    data: apiProject,
+    isLoading: isLoadingApi,
+    isError: isApiError,
+  } = usePublicProject(numericId ?? 0, !!numericId);
+
   // Find mock project by ID
   const mockProject = useMemo(() => {
     return projectsData.find(p => p.id === projectId);
   }, [projectId]);
 
+  // Determine which project to use: API first, then mock, then null
+  const project: ProjectUnion | null = useMemo(() => {
+    if (apiProject) {
+      return apiProject;
+    }
+    if (!numericId || isApiError) {
+      // If ID is not numeric or API failed, use mock data
+      return mockProject ?? null;
+    }
+    return null;
+  }, [apiProject, mockProject, numericId, isApiError]);
+
   // Create image gallery
   const images = useMemo(() => {
-    if (!mockProject) return [];
-    // Use project image as primary, add mock images for gallery
-    return [mockProject.imageSrc, '/images/fon2.png', '/images/fon3.png'];
-  }, [mockProject]);
+    if (!project) return [];
+
+    if (isApiProject(project)) {
+      // API project - use getImageUrl utility for proper URL formatting
+      if (project.images && project.images.length > 0) {
+        return project.images.map(img => getImageUrl(img.image));
+      } else if (project.photo) {
+        return [getImageUrl(project.photo)];
+      }
+      // Return placeholder if no images
+      return ['/images/placeholder-project.jpg'];
+    } else {
+      // Mock project
+      return [project.imageSrc, '/images/fon2.png', '/images/fon3.png'];
+    }
+  }, [project]);
 
   // Intersection observer for animations
   useEffect(() => {
@@ -89,8 +137,49 @@ export default function ProjectDetailPage() {
     setCurrentImageIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
+  // Normalize project data for display
+  const displayData = useMemo(() => {
+    if (!project) return null;
+
+    if (isApiProject(project)) {
+      return {
+        title: project.title,
+        description: project.description,
+        imageAlt: project.title,
+        stage: project.stage,
+        status: project.status,
+        teamSize: project.team_capacity_label,
+        tags: project.tags?.map(t => `#${t.name}`) || [],
+      };
+    } else {
+      return {
+        title: project.title,
+        description: project.description,
+        imageAlt: project.imageAlt,
+        stage: project.stage,
+        status: project.status,
+        teamSize: project.teamSize,
+        tags: project.tags || [],
+      };
+    }
+  }, [project]);
+
+  // Loading state
+  if (isLoadingApi && numericId) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <BackgroundElements />
+        <StaticHeader />
+        <div className="relative z-10 text-center px-5 pt-24">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white/60 font-montserrat">Загрузка проекта...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Handle not found
-  if (!mockProject) {
+  if (!project || !displayData) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <BackgroundElements />
@@ -132,84 +221,88 @@ export default function ProjectDetailPage() {
               backgroundClip: 'text',
             }}
           >
-            {mockProject.title}
+            {displayData.title}
           </h1>
 
           {/* Image Gallery */}
-          <div className="relative mb-8 md:mb-12 max-w-5xl mx-auto">
-            <div
-              className="relative aspect-video overflow-hidden bg-white/5 backdrop-blur-sm"
-              style={{ borderRadius: '40px' }}
-            >
-              <Image
-                src={images[currentImageIndex]}
-                alt={mockProject.imageAlt}
-                fill
-                className="object-cover"
-                priority
-              />
-
-              {/* Navigation Arrows - Reduced size on mobile */}
-              {images.length > 1 && (
-                <>
-                  <button
-                    onClick={handlePrevImage}
-                    className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/20"
-                    aria-label="Previous image"
-                  >
-                    <svg
-                      className="w-5 h-5 md:w-6 md:h-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={handleNextImage}
-                    className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/20"
-                    aria-label="Next image"
-                  >
-                    <svg
-                      className="w-5 h-5 md:w-6 md:h-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </button>
-                </>
-              )}
-
-              {/* Counter Badge - Adjusted position for mobile */}
+          {images.length > 0 && (
+            <div className="relative mb-8 md:mb-12 max-w-5xl mx-auto">
               <div
-                className="absolute bottom-3 left-3 md:bottom-6 md:left-6 px-4 py-2 md:px-5 md:py-2.5 bg-white/10 backdrop-blur-md font-miracode text-xs md:text-sm border"
-                style={{
-                  borderRadius: '20px',
-                  borderImage:
-                    'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
-                }}
+                className="relative aspect-video overflow-hidden bg-white/5 backdrop-blur-sm"
+                style={{ borderRadius: '40px' }}
               >
-                {currentImageIndex + 1} из {images.length}
+                <Image
+                  src={images[currentImageIndex]}
+                  alt={displayData.imageAlt || displayData.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+
+                {/* Navigation Arrows - Reduced size on mobile */}
+                {images.length > 1 && (
+                  <>
+                    <button
+                      onClick={handlePrevImage}
+                      className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/20"
+                      aria-label="Previous image"
+                    >
+                      <svg
+                        className="w-5 h-5 md:w-6 md:h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 19l-7-7 7-7"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={handleNextImage}
+                      className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/20"
+                      aria-label="Next image"
+                    >
+                      <svg
+                        className="w-5 h-5 md:w-6 md:h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </button>
+                  </>
+                )}
+
+                {/* Counter Badge - Adjusted position for mobile */}
+                {images.length > 1 && (
+                  <div
+                    className="absolute bottom-3 left-3 md:bottom-6 md:left-6 px-4 py-2 md:px-5 md:py-2.5 bg-white/10 backdrop-blur-md font-miracode text-xs md:text-sm border"
+                    style={{
+                      borderRadius: '20px',
+                      borderImage:
+                        'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
+                    }}
+                  >
+                    {currentImageIndex + 1} из {images.length}
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Status Badges - Reduced gap on mobile */}
           <div className="flex flex-wrap gap-4 md:gap-6 justify-center mb-12 md:mb-16">
-            {mockProject.stage && (
+            {displayData.stage && (
               <div className="flex flex-col items-center gap-2">
                 <span className="text-[#A7A7A7] font-miracode text-xs md:text-sm">
                   Стадия
@@ -221,11 +314,11 @@ export default function ProjectDetailPage() {
                       'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
                   }}
                 >
-                  {mockProject.stage}
+                  {displayData.stage}
                 </div>
               </div>
             )}
-            {mockProject.status && (
+            {displayData.status && (
               <div className="flex flex-col items-center gap-2">
                 <span className="text-[#A7A7A7] font-miracode text-xs md:text-sm">
                   Статус
@@ -237,11 +330,11 @@ export default function ProjectDetailPage() {
                       'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
                   }}
                 >
-                  {mockProject.status}
+                  {displayData.status}
                 </div>
               </div>
             )}
-            {mockProject.teamSize && (
+            {displayData.teamSize && (
               <div className="flex flex-col items-center gap-2">
                 <span className="text-[#A7A7A7] font-miracode text-xs md:text-sm">
                   Команда
@@ -253,7 +346,7 @@ export default function ProjectDetailPage() {
                       'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
                   }}
                 >
-                  {mockProject.teamSize}
+                  {displayData.teamSize}
                 </div>
               </div>
             )}
@@ -261,59 +354,61 @@ export default function ProjectDetailPage() {
         </section>
 
         {/* Tags Marquee Section - Reduced padding and font size on mobile */}
-        <section className="py-6 md:py-8 overflow-hidden relative border-y border-white/10">
-          {/* First row - scroll left */}
-          <div className="flex animate-marquee whitespace-nowrap mb-4 md:mb-6">
-            {[...mockProject.tags, ...mockProject.tags].map((tag, index) => (
-              <span
-                key={`tag-1-${index}`}
-                className="inline-block px-4 py-2 md:px-8 md:py-3 font-miracode text-[#A7A7A7] text-sm md:text-base mx-2 md:mx-3"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+        {displayData.tags.length > 0 && (
+          <section className="py-6 md:py-8 overflow-hidden relative border-y border-white/10">
+            {/* First row - scroll left */}
+            <div className="flex animate-marquee whitespace-nowrap mb-4 md:mb-6">
+              {[...displayData.tags, ...displayData.tags].map((tag, index) => (
+                <span
+                  key={`tag-1-${index}`}
+                  className="inline-block px-4 py-2 md:px-8 md:py-3 font-miracode text-[#A7A7A7] text-sm md:text-base mx-2 md:mx-3"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
 
-          {/* Decorative line */}
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-4 md:mb-6" />
+            {/* Decorative line */}
+            <div className="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-4 md:mb-6" />
 
-          {/* Second row - scroll right */}
-          <div className="flex animate-marquee-reverse whitespace-nowrap">
-            {[...mockProject.tags, ...mockProject.tags].map((tag, index) => (
-              <span
-                key={`tag-2-${index}`}
-                className="inline-block px-4 py-2 md:px-8 md:py-3 font-miracode text-[#A7A7A7] text-sm md:text-base mx-2 md:mx-3"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+            {/* Second row - scroll right */}
+            <div className="flex animate-marquee-reverse whitespace-nowrap">
+              {[...displayData.tags, ...displayData.tags].map((tag, index) => (
+                <span
+                  key={`tag-2-${index}`}
+                  className="inline-block px-4 py-2 md:px-8 md:py-3 font-miracode text-[#A7A7A7] text-sm md:text-base mx-2 md:mx-3"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
 
-          <style jsx>{`
-            @keyframes marquee {
-              0% {
-                transform: translateX(0);
+            <style jsx>{`
+              @keyframes marquee {
+                0% {
+                  transform: translateX(0);
+                }
+                100% {
+                  transform: translateX(-50%);
+                }
               }
-              100% {
-                transform: translateX(-50%);
+              @keyframes marquee-reverse {
+                0% {
+                  transform: translateX(-50%);
+                }
+                100% {
+                  transform: translateX(0);
+                }
               }
-            }
-            @keyframes marquee-reverse {
-              0% {
-                transform: translateX(-50%);
+              .animate-marquee {
+                animation: marquee 30s linear infinite;
               }
-              100% {
-                transform: translateX(0);
+              .animate-marquee-reverse {
+                animation: marquee-reverse 30s linear infinite;
               }
-            }
-            .animate-marquee {
-              animation: marquee 30s linear infinite;
-            }
-            .animate-marquee-reverse {
-              animation: marquee-reverse 30s linear infinite;
-            }
-          `}</style>
-        </section>
+            `}</style>
+          </section>
+        )}
 
         {/* About Project Section - Reduced padding and font sizes on mobile */}
         <section
@@ -350,13 +445,7 @@ export default function ProjectDetailPage() {
             }}
           >
             <p className="text-white font-montserrat text-base md:text-xl lg:text-2xl leading-relaxed">
-              {mockProject.description}
-            </p>
-            <p className="text-white/80 font-montserrat text-sm md:text-base lg:text-lg leading-relaxed mt-4 md:mt-6">
-              Этот проект представляет собой инновационное решение, направленное
-              на улучшение пользовательского опыта и решение актуальных задач.
-              Мы используем современные технологии и лучшие практики разработки
-              для создания качественного продукта.
+              {displayData.description}
             </p>
           </div>
         </section>

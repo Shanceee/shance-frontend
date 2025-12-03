@@ -26,10 +26,11 @@ export function TagSearchDropdown({
   searchQuery,
   onSearchChange,
   className,
-  title = 'Тэги',
+  title: _title = 'Тэги',
 }: TagSearchDropdownProps) {
   const panelRef = useRef<HTMLDivElement>(null);
-  const [localSelectedTags, setLocalSelectedTags] = useState<Tag[]>(selectedTags);
+  const [localSelectedTags, setLocalSelectedTags] =
+    useState<Tag[]>(selectedTags);
 
   // Sync local state with props
   useEffect(() => {
@@ -77,7 +78,8 @@ export function TagSearchDropdown({
     onClose();
   };
 
-  const hasChanges = localSelectedTags.length !== selectedTags.length ||
+  const hasChanges =
+    localSelectedTags.length !== selectedTags.length ||
     localSelectedTags.some(t => !selectedTags.find(st => st.id === t.id));
 
   if (!isOpen) return null;
@@ -207,9 +209,14 @@ export function TagSearchDropdown({
               ? 'hover:opacity-90'
               : 'bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.15)]'
           )}
-          style={hasChanges ? {
-            background: 'linear-gradient(229deg, rgba(35, 35, 35, 1) 0%, rgba(47, 131, 94, 1) 100%)',
-          } : undefined}
+          style={
+            hasChanges
+              ? {
+                  background:
+                    'linear-gradient(229deg, rgba(35, 35, 35, 1) 0%, rgba(47, 131, 94, 1) 100%)',
+                }
+              : undefined
+          }
         >
           сохранить изменения
         </button>

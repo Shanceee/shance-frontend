@@ -1,8 +1,10 @@
 export { projectsApi } from './api';
 export {
+  useAllProjects,
   useProjects,
   useInfiniteProjects,
   useProject,
+  usePublicProject,
   useCreateProject,
   useUpdateProject,
   useDeleteProject,

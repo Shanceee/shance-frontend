@@ -136,3 +136,49 @@ export function formatFileSize(bytes: number): string {
 export function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+/**
+ * Get full image URL for project photos
+ * Handles relative and absolute URLs from API
+ */
+export function getImageUrl(photo: string | null | undefined): string {
+  // Use placeholder if no photo provided
+  if (!photo) {
+    return '/images/placeholder-project.jpg';
+  }
+
+  // If already absolute URL, return as is
+  if (photo.startsWith('http://') || photo.startsWith('https://')) {
+    return photo;
+  }
+
+  // Get API base URL from env or use fallback
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api/v1', '') ||
+    'http://185.171.82.179:8000';
+
+  // Prepend base URL for relative paths
+  return `${API_BASE_URL}${photo}`;
+}
+
+/**
+ * Get the best available image URL from a project
+ * Priority: images array > photo field > placeholder
+ */
+export function getProjectImageUrl(project: {
+  photo?: string | null;
+  images?: Array<{ image: string }> | null;
+}): string {
+  // First check images array (API stores images here, not in photo field)
+  if (project.images && project.images.length > 0 && project.images[0]?.image) {
+    return getImageUrl(project.images[0].image);
+  }
+
+  // Fall back to photo field
+  if (project.photo) {
+    return getImageUrl(project.photo);
+  }
+
+  // Default placeholder
+  return '/images/placeholder-project.jpg';
+}

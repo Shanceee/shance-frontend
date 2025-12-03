@@ -27,11 +27,13 @@ export function ProjectsGrid({ projects, onResetFilters }: ProjectsGridProps) {
 
   return (
     <div className="w-full">
-      {/* 2-column grid layout matching Figma design */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {projects.map((project: ProjectData) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
+      {/* 2-column grid layout matching Figma design - cards 663x368 with visible spacing */}
+      <div className="flex justify-center px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[663px_663px] gap-8 lg:gap-8 w-full lg:w-auto">
+          {projects.map((project: ProjectData) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
       </div>
 
       {/* Информация о количестве проектов */}

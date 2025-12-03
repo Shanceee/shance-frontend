@@ -21,6 +21,11 @@ interface ProjectListParams {
 }
 
 export const projectsApi = {
+  // Public endpoint - all projects without authentication
+  listAll: (params?: ProjectListParams): Promise<PaginatedResponse<Project>> =>
+    api.get<PaginatedResponse<Project>>('projects/all/', params),
+
+  // Authenticated endpoint - user's own projects only
   list: (params?: ProjectListParams): Promise<PaginatedResponse<Project>> =>
     api.get<PaginatedResponse<Project>>('projects/', params),
 

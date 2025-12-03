@@ -17,7 +17,10 @@ export const technologiesApi = {
   list: (
     params?: TechnologyListParams
   ): Promise<PaginatedResponse<Technology>> =>
-    api.get<PaginatedResponse<Technology>>('vacancies/technologies/list/', params),
+    api.get<PaginatedResponse<Technology>>(
+      'vacancies/technologies/list/',
+      params
+    ),
 
   get: (id: number): Promise<Technology> =>
     api.get<Technology>(`vacancies/technologies/${id}/`),
@@ -33,5 +36,7 @@ export const technologiesApi = {
 
   // Note: API doesn't have a dedicated search endpoint, filtering through list params
   search: (query: string): Promise<PaginatedResponse<Technology>> =>
-    api.get<PaginatedResponse<Technology>>('vacancies/technologies/list/', { search: query }),
+    api.get<PaginatedResponse<Technology>>('vacancies/technologies/list/', {
+      search: query,
+    }),
 };

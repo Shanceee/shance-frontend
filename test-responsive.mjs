@@ -26,7 +26,9 @@ async function testResponsive() {
       path: './screenshots/create-project-desktop.png',
       fullPage: true,
     });
-    console.log('✓ Desktop screenshot saved to ./screenshots/create-project-desktop.png');
+    console.log(
+      '✓ Desktop screenshot saved to ./screenshots/create-project-desktop.png'
+    );
 
     console.log('Taking mobile screenshot (375x812)...');
     await page.setViewportSize({ width: 375, height: 812 });
@@ -35,7 +37,9 @@ async function testResponsive() {
       path: './screenshots/create-project-mobile.png',
       fullPage: true,
     });
-    console.log('✓ Mobile screenshot saved to ./screenshots/create-project-mobile.png');
+    console.log(
+      '✓ Mobile screenshot saved to ./screenshots/create-project-mobile.png'
+    );
 
     console.log('Taking tablet screenshot (768x1024)...');
     await page.setViewportSize({ width: 768, height: 1024 });
@@ -44,7 +48,9 @@ async function testResponsive() {
       path: './screenshots/create-project-tablet.png',
       fullPage: true,
     });
-    console.log('✓ Tablet screenshot saved to ./screenshots/create-project-tablet.png');
+    console.log(
+      '✓ Tablet screenshot saved to ./screenshots/create-project-tablet.png'
+    );
 
     // Test interactive elements on mobile
     console.log('\nTesting touch targets on mobile...');
@@ -64,7 +70,9 @@ async function testResponsive() {
     }
 
     if (smallTargets > 0) {
-      console.log(`⚠ Warning: ${smallTargets} touch targets are smaller than 44px`);
+      console.log(
+        `⚠ Warning: ${smallTargets} touch targets are smaller than 44px`
+      );
     } else {
       console.log('✓ All touch targets meet the 44px minimum size');
     }

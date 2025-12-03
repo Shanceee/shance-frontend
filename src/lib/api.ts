@@ -94,19 +94,7 @@ const baseApi: KyInstance = ky.create({
       request => {
         const token = tokenManager.getToken();
 
-        // Block requests to authenticated endpoints if no token
-        // Return a mock 401 response instead of making the actual request
-        const url = request.url;
-        if (url.includes('/users/me') && !token) {
-          return new Response(
-            JSON.stringify({ detail: 'Not authenticated' }),
-            {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }
-          );
-        }
-
+        // Add Authorization header if token exists
         if (token) {
           request.headers.set('Authorization', `JWT ${token}`);
         }

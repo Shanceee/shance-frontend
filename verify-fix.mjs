@@ -13,7 +13,10 @@ let hasErrors = false;
 
 // Test 1: Check that uploadPhoto is removed from api.ts
 console.log('Test 1: Checking api.ts...');
-const apiContent = readFileSync(join(process.cwd(), 'src/modules/projects/api.ts'), 'utf-8');
+const apiContent = readFileSync(
+  join(process.cwd(), 'src/modules/projects/api.ts'),
+  'utf-8'
+);
 
 if (apiContent.includes('uploadPhoto')) {
   console.log('❌ FAIL: uploadPhoto method still exists in api.ts');
@@ -40,7 +43,10 @@ console.log();
 
 // Test 2: Check that hooks.ts uses uploadImage correctly
 console.log('Test 2: Checking hooks.ts...');
-const hooksContent = readFileSync(join(process.cwd(), 'src/modules/projects/hooks.ts'), 'utf-8');
+const hooksContent = readFileSync(
+  join(process.cwd(), 'src/modules/projects/hooks.ts'),
+  'utf-8'
+);
 
 if (hooksContent.includes('useUploadProjectPhoto')) {
   console.log('❌ FAIL: useUploadProjectPhoto hook still exists');
@@ -81,7 +87,10 @@ console.log();
 
 // Test 3: Check that index.ts doesn't export removed hook
 console.log('Test 3: Checking index.ts...');
-const indexContent = readFileSync(join(process.cwd(), 'src/modules/projects/index.ts'), 'utf-8');
+const indexContent = readFileSync(
+  join(process.cwd(), 'src/modules/projects/index.ts'),
+  'utf-8'
+);
 
 if (indexContent.includes('useUploadProjectPhoto')) {
   console.log('❌ FAIL: useUploadProjectPhoto still exported from index.ts');

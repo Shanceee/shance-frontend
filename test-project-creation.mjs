@@ -9,14 +9,17 @@
  *   node test-project-creation.mjs
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://185.171.82.179:8000/api/v1';
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://185.171.82.179:8000/api/v1';
 
 // You need to set your JWT token here
 const JWT_TOKEN = process.env.JWT_TOKEN || '';
 
 if (!JWT_TOKEN) {
   console.error('Please set JWT_TOKEN environment variable');
-  console.log('Example: JWT_TOKEN=your_token_here node test-project-creation.mjs');
+  console.log(
+    'Example: JWT_TOKEN=your_token_here node test-project-creation.mjs'
+  );
   process.exit(1);
 }
 
@@ -29,7 +32,8 @@ async function testProjectCreation() {
     const projectData = {
       name: `Test Project ${Date.now()}`,
       title: `Test Project Title ${Date.now()}`,
-      description: 'This is a test project description created by automated test script to verify the API works correctly',
+      description:
+        'This is a test project description created by automated test script to verify the API works correctly',
       status: 'prototype',
       stage: 'idea',
     };
@@ -38,14 +42,16 @@ async function testProjectCreation() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `JWT ${JWT_TOKEN}`,
+        Authorization: `JWT ${JWT_TOKEN}`,
       },
       body: JSON.stringify(projectData),
     });
 
     if (!createResponse.ok) {
       const errorText = await createResponse.text();
-      throw new Error(`Failed to create project: ${createResponse.status} ${errorText}`);
+      throw new Error(
+        `Failed to create project: ${createResponse.status} ${errorText}`
+      );
     }
 
     const project = await createResponse.json();
@@ -68,18 +74,25 @@ async function testProjectCreation() {
     const blob = new Blob([pngBuffer], { type: 'image/png' });
     formData.append('image', blob, 'test-image.png');
 
-    const uploadResponse = await fetch(`${API_URL}/projects/${project.id}/images/`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `JWT ${JWT_TOKEN}`,
-      },
-      body: formData,
-    });
+    const uploadResponse = await fetch(
+      `${API_URL}/projects/${project.id}/images/`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `JWT ${JWT_TOKEN}`,
+        },
+        body: formData,
+      }
+    );
 
     if (!uploadResponse.ok) {
       const errorText = await uploadResponse.text();
-      console.log(`⚠️  Image upload failed: ${uploadResponse.status} ${errorText}`);
-      console.log('   This is expected if the endpoint requires different parameters\n');
+      console.log(
+        `⚠️  Image upload failed: ${uploadResponse.status} ${errorText}`
+      );
+      console.log(
+        '   This is expected if the endpoint requires different parameters\n'
+      );
     } else {
       const imageData = await uploadResponse.json();
       console.log('✅ Image uploaded successfully!');
@@ -92,24 +105,28 @@ async function testProjectCreation() {
     const getResponse = await fetch(`${API_URL}/projects/${project.id}/`, {
       method: 'GET',
       headers: {
-        'Authorization': `JWT ${JWT_TOKEN}`,
+        Authorization: `JWT ${JWT_TOKEN}`,
       },
     });
 
     if (!getResponse.ok) {
       const errorText = await getResponse.text();
-      throw new Error(`Failed to get project: ${getResponse.status} ${errorText}`);
+      throw new Error(
+        `Failed to get project: ${getResponse.status} ${errorText}`
+      );
     }
 
     const projectDetails = await getResponse.json();
     console.log('✅ Project fetched successfully!');
-    console.log('   Full project data:', JSON.stringify(projectDetails, null, 2));
+    console.log(
+      '   Full project data:',
+      JSON.stringify(projectDetails, null, 2)
+    );
     console.log('\n');
 
     console.log('===========================================');
     console.log('✅ ALL TESTS PASSED!');
     console.log('===========================================');
-
   } catch (error) {
     console.error('\n❌ TEST FAILED:');
     console.error(error.message);

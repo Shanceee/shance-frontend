@@ -53,14 +53,15 @@ export const queryKeys = {
   },
 
   projects: {
-    all: ['projects'] as const,
-    lists: () => [...queryKeys.projects.all, 'list'] as const,
+    all: (params?: Record<string, unknown>) =>
+      ['projects', 'all', params] as const,
+    allLists: () => ['projects', 'all'] as const,
+    lists: () => ['projects', 'list'] as const,
     list: (params?: Record<string, unknown>) =>
       [...queryKeys.projects.lists(), params] as const,
-    details: () => [...queryKeys.projects.all, 'detail'] as const,
+    details: () => ['projects', 'detail'] as const,
     detail: (id: number) => [...queryKeys.projects.details(), id] as const,
-    search: (query: string) =>
-      [...queryKeys.projects.all, 'search', query] as const,
+    search: (query: string) => ['projects', 'search', query] as const,
     members: (id: number) =>
       [...queryKeys.projects.detail(id), 'members'] as const,
     images: (id: number) =>

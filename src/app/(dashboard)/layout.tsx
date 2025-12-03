@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { useCurrentUser, useLogout } from '@/modules/auth';
 import { tokenManager } from '@/lib/api';
+import { getImageUrl } from '@/lib/utils';
 
 export default function DashboardLayout({
   children,
@@ -14,67 +15,70 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
   const router = useRouter();
   const logout = useLogout();
-  const { data: user, isLoading } = useCurrentUser();
+  const hasRedirected = useRef(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // Only fetch user data if we have a token
+  const hasToken = tokenManager.getToken();
+  const { data: user, isLoading, isError } = useCurrentUser();
 
-  // Redirect to login if no token or no user after loading
+  // Handle all redirects in useEffect to avoid setState during render
   useEffect(() => {
-    if (isMounted && !tokenManager.getToken()) {
-      router.push('/login');
+    const token = tokenManager.getToken();
+
+    // No token - redirect to login
+    if (!token) {
+      if (!hasRedirected.current) {
+        hasRedirected.current = true;
+        router.replace('/login');
+      }
+      return;
     }
-  }, [isMounted, router]);
 
+    // Has token - allow render
+    setShouldRender(true);
+  }, [router]);
+
+  // Handle error state redirect in separate effect
+  // Only clear tokens and redirect if we explicitly got an auth error
   useEffect(() => {
-    if (isMounted && !isLoading && !user) {
-      router.push('/login');
+    // Only handle actual errors, not initial loading states
+    if (isError && !isLoading) {
+      if (!hasRedirected.current) {
+        hasRedirected.current = true;
+        tokenManager.clearTokens();
+        router.replace('/login');
+      }
     }
-  }, [isMounted, isLoading, user, router]);
+  }, [isLoading, isError, router]);
 
   const handleLogout = () => {
     logout.mutate();
     setIsSettingsOpen(false);
   };
 
-  // If not mounted or no token, show loading (will redirect via useEffect)
-  if (!isMounted || !tokenManager.getToken()) {
-    return (
-      <div className="min-h-screen bg-[#161419] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00A851] mx-auto mb-4"></div>
-          <p className="text-white/80 font-montserrat">Loading...</p>
-        </div>
-      </div>
-    );
+  // Don't render until we've confirmed we have a token
+  if (!shouldRender) {
+    return null;
   }
 
-  // Show loading while fetching user
+  // Show loading only when we have a token and are verifying it
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#161419] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00A851] mx-auto mb-4"></div>
-          <p className="text-white/80 font-montserrat">Loading...</p>
+          <p className="text-white/80 font-montserrat">Загрузка профиля...</p>
         </div>
       </div>
     );
   }
 
-  // If query failed and no user, show redirecting (redirect happens via useEffect)
+  // If still no user after loading, show nothing (redirect happening in effect)
   if (!user) {
-    return (
-      <div className="min-h-screen bg-[#161419] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00A851] mx-auto mb-4"></div>
-          <p className="text-white/80 font-montserrat">Redirecting...</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -122,8 +126,8 @@ export default function DashboardLayout({
                 <span>Главная</span>
               </Link>
 
-              <button
-                onClick={() => router.push('/favorites')}
+              <Link
+                href="/projects"
                 className="flex items-center space-x-2 text-white/80 hover:text-white font-montserrat transition-colors"
               >
                 <svg
@@ -136,11 +140,11 @@ export default function DashboardLayout({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                   />
                 </svg>
-                <span>Избранное</span>
-              </button>
+                <span>Проекты</span>
+              </Link>
 
               <Link
                 href="/profile"
@@ -163,33 +167,57 @@ export default function DashboardLayout({
               </Link>
             </nav>
 
-            {/* Settings dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300"
-                aria-label="Settings"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+            {/* User avatar and Settings dropdown */}
+            <div className="hidden md:flex items-center gap-3">
+              {/* User avatar */}
+              <Link href="/profile" className="relative w-9 h-9 rounded-full overflow-hidden hover:ring-2 hover:ring-[#00A851] transition-all">
+                {user.avatar ? (
+                  <Image
+                    src={getImageUrl(user.avatar)}
+                    alt={`${user.first_name || user.username || 'User'} avatar`}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-[#00A851] to-[#008f45] flex items-center justify-center">
+                    <span className="text-sm font-unbounded font-bold text-white">
+                      {user.first_name?.charAt(0) ||
+                        user.username?.charAt(0)?.toUpperCase() ||
+                        user.email?.charAt(0)?.toUpperCase() ||
+                        'U'}
+                    </span>
+                  </div>
+                )}
+              </Link>
+
+              {/* Settings dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                  className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300"
+                  aria-label="Settings"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </button>
 
               {/* Settings dropdown menu */}
               {isSettingsOpen && (
@@ -238,6 +266,7 @@ export default function DashboardLayout({
                   </button>
                 </div>
               )}
+              </div>
             </div>
 
             {/* Mobile menu button */}
@@ -289,12 +318,10 @@ export default function DashboardLayout({
                   <span>Главная</span>
                 </Link>
 
-                <button
-                  onClick={() => {
-                    router.push('/favorites');
-                    setIsSettingsOpen(false);
-                  }}
-                  className="flex items-center space-x-2 text-white/80 hover:text-white font-montserrat transition-colors py-2 w-full text-left"
+                <Link
+                  href="/projects"
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="flex items-center space-x-2 text-white/80 hover:text-white font-montserrat transition-colors py-2"
                 >
                   <svg
                     className="w-5 h-5"
@@ -306,11 +333,11 @@ export default function DashboardLayout({
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                     />
                   </svg>
-                  <span>Избранное</span>
-                </button>
+                  <span>Проекты</span>
+                </Link>
 
                 <button
                   onClick={() => {

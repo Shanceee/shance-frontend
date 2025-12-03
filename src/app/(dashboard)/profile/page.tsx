@@ -5,15 +5,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useCurrentUser } from '@/modules/auth';
-import { useProjects } from '@/modules/projects';
+import { useUserProjects } from '@/modules/users';
+import { getImageUrl } from '@/lib/utils';
 
 export default function ProfilePage() {
   const { data: user, isLoading: isLoadingUser } = useCurrentUser();
   const [activeTab, setActiveTab] = useState<'info' | 'projects'>('info');
 
-  const { data: projectsData } = useProjects({
-    enabled: activeTab === 'projects',
-  });
+  const { data: projectsData, isLoading: isLoadingProjects } = useUserProjects(
+    user?.id ?? 0,
+    activeTab === 'projects' && !!user?.id
+  );
 
   if (isLoadingUser) {
     return (
@@ -34,7 +36,8 @@ export default function ProfilePage() {
     );
   }
 
-  const userProjects = projectsData?.results || [];
+  // API returns Project[] directly, not paginated
+  const userProjects = projectsData || [];
 
   return (
     <div className="relative">
@@ -68,10 +71,11 @@ export default function ProfilePage() {
                 <div className="relative w-[200px] h-[200px] rounded-full overflow-hidden">
                   {user.avatar ? (
                     <Image
-                      src={user.avatar}
+                      src={getImageUrl(user.avatar)}
                       alt={`${user.first_name || user.username || 'User'} avatar`}
                       fill
                       className="object-cover"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#00A851] to-[#008f45] flex items-center justify-center">
@@ -139,7 +143,10 @@ export default function ProfilePage() {
                       Имя
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
-                      <p className="text-xl font-unbounded text-white truncate" title={user.first_name || '-'}>
+                      <p
+                        className="text-xl font-unbounded text-white truncate"
+                        title={user.first_name || '-'}
+                      >
                         {user.first_name || '-'}
                       </p>
                     </div>
@@ -150,7 +157,10 @@ export default function ProfilePage() {
                       Фамилия
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
-                      <p className="text-xl font-unbounded text-white truncate" title={user.last_name || '-'}>
+                      <p
+                        className="text-xl font-unbounded text-white truncate"
+                        title={user.last_name || '-'}
+                      >
                         {user.last_name || '-'}
                       </p>
                     </div>
@@ -162,7 +172,10 @@ export default function ProfilePage() {
                       Сфера деятельности
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
-                      <p className="text-xl font-unbounded text-white truncate" title={user.specialization || '-'}>
+                      <p
+                        className="text-xl font-unbounded text-white truncate"
+                        title={user.specialization || '-'}
+                      >
                         {user.specialization || '-'}
                       </p>
                     </div>
@@ -175,7 +188,10 @@ export default function ProfilePage() {
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
                       {user.tags && user.tags.length > 0 ? (
-                        <p className="text-xl font-unbounded text-white truncate" title={user.tags.map(tag => `#${tag.name}`).join(' ')}>
+                        <p
+                          className="text-xl font-unbounded text-white truncate"
+                          title={user.tags.map(tag => `#${tag.name}`).join(' ')}
+                        >
                           {user.tags.map(tag => `#${tag.name}`).join(' ')}
                         </p>
                       ) : (
@@ -190,7 +206,10 @@ export default function ProfilePage() {
                       Страна
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
-                      <p className="text-xl font-unbounded text-white truncate" title={user.country || '-'}>
+                      <p
+                        className="text-xl font-unbounded text-white truncate"
+                        title={user.country || '-'}
+                      >
                         {user.country || '-'}
                       </p>
                     </div>
@@ -201,7 +220,10 @@ export default function ProfilePage() {
                       Город
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
-                      <p className="text-xl font-unbounded text-white truncate" title={user.city || '-'}>
+                      <p
+                        className="text-xl font-unbounded text-white truncate"
+                        title={user.city || '-'}
+                      >
                         {user.city || '-'}
                       </p>
                     </div>
@@ -213,7 +235,10 @@ export default function ProfilePage() {
                       Телефон
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
-                      <p className="text-xl font-unbounded text-white truncate" title={user.phone || '-'}>
+                      <p
+                        className="text-xl font-unbounded text-white truncate"
+                        title={user.phone || '-'}
+                      >
                         {user.phone || '-'}
                       </p>
                     </div>
@@ -224,7 +249,10 @@ export default function ProfilePage() {
                       Почта
                     </label>
                     <div className="border-b border-white pb-2 overflow-hidden">
-                      <p className="text-xl font-unbounded text-white truncate" title={user.email || '-'}>
+                      <p
+                        className="text-xl font-unbounded text-white truncate"
+                        title={user.email || '-'}
+                      >
                         {user.email || '-'}
                       </p>
                     </div>
@@ -254,7 +282,10 @@ export default function ProfilePage() {
                         rel="noopener noreferrer"
                         className="flex-1 flex items-center justify-between h-[58px] px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent hover:border-white/20 transition-all group min-w-0"
                       >
-                        <span className="text-white/80 font-montserrat text-sm truncate mr-2" title={user.github_url}>
+                        <span
+                          className="text-white/80 font-montserrat text-sm truncate mr-2"
+                          title={user.github_url}
+                        >
                           {user.github_url}
                         </span>
                         <svg
@@ -301,7 +332,10 @@ export default function ProfilePage() {
                         rel="noopener noreferrer"
                         className="flex-1 flex items-center justify-between h-[58px] px-5 bg-[rgba(217,217,217,0.05)] rounded-xl border border-transparent hover:border-white/20 transition-all group min-w-0"
                       >
-                        <span className="text-white/80 font-montserrat text-sm truncate mr-2" title={user.behance_url}>
+                        <span
+                          className="text-white/80 font-montserrat text-sm truncate mr-2"
+                          title={user.behance_url}
+                        >
                           {user.behance_url}
                         </span>
                         <svg
@@ -356,11 +390,19 @@ export default function ProfilePage() {
                   </Link>
                 </div>
 
-                {userProjects.length > 0 ? (
+                {isLoadingProjects ? (
+                  <div className="text-center py-16">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                    <p className="text-white/60 font-montserrat">
+                      Загрузка проектов...
+                    </p>
+                  </div>
+                ) : userProjects.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {userProjects.map(project => (
-                      <div
+                      <Link
                         key={project.id}
+                        href={`/projects/${project.id}`}
                         className="bg-white/5 backdrop-blur-sm rounded-[20px] p-6 hover:bg-white/10 transition-all"
                       >
                         {project.photo && (
@@ -398,7 +440,7 @@ export default function ProfilePage() {
                             ))}
                           </div>
                         )}
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 ) : (

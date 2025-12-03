@@ -724,7 +724,10 @@ export default function CreateProjectPage() {
 
                 <div className="space-y-3">
                   {links.map(link => (
-                    <div key={link.id} className="flex items-center gap-2 md:gap-3">
+                    <div
+                      key={link.id}
+                      className="flex items-center gap-2 md:gap-3"
+                    >
                       {/* Icon */}
                       <div className="w-[44px] sm:w-[52px] h-[44px] sm:h-[52px] bg-white/5 rounded-xl flex items-center justify-center flex-shrink-0">
                         {link.type === 'github' && (
@@ -925,7 +928,9 @@ export default function CreateProjectPage() {
                       key={index}
                       className="bg-white/10 rounded-xl px-4 md:px-5 py-2.5 md:py-3 flex items-center gap-2"
                     >
-                      <span className="font-miracode text-sm md:text-[16px]">{skill}</span>
+                      <span className="font-miracode text-sm md:text-[16px]">
+                        {skill}
+                      </span>
                       <button
                         type="button"
                         onClick={() => handleRemoveSkill(index)}

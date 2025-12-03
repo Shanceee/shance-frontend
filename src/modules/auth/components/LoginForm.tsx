@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 
-import PhoneIcon from '@/assets/phone.svg';
+import EmailIcon from '@/assets/email.svg';
 import LockIcon from '@/assets/lock.svg';
 import EyeIcon from '@/assets/eye.svg';
 import { useLogin } from '@/modules/auth';
@@ -37,7 +37,7 @@ export function LoginForm() {
         <div className="bg-[rgba(217,217,217,0.05)] flex gap-3 h-[58px] items-center justify-start px-5 py-2.5 relative rounded-[12px] w-full">
           <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
           <div className="relative shrink-0 size-[17.964px]">
-            <PhoneIcon className="block max-w-none size-full text-[#575757]" />
+            <EmailIcon className="block max-w-none size-full text-[#575757]" />
           </div>
           <div className="bg-[#575757] h-5 shrink-0 w-px" />
           <input

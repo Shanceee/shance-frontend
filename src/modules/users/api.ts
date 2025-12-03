@@ -11,14 +11,25 @@ interface UserListParams {
 
 export const usersApi = {
   // Note: API doesn't have a users list endpoint
-  list: (params?: UserListParams): Promise<PaginatedResponse<User>> => {
+  list: (_params?: UserListParams): Promise<PaginatedResponse<User>> => {
     console.warn('Users list endpoint is not available in the API');
-    return Promise.resolve({ count: 0, next: null, previous: null, results: [] });
+    return Promise.resolve({
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    });
   },
 
   get: (id: number): Promise<User> => api.get<User>(`users/${id}/profile/`),
 
   getMe: (): Promise<User> => api.get<User>('users/me/'),
+
+  // Note: API doesn't have a generic user update endpoint (only updateMe for current user)
+  update: (_id: number, _data: UserUpdate): Promise<User> => {
+    console.warn('Generic user update endpoint is not available in the API');
+    return Promise.reject(new Error('User update not supported'));
+  },
 
   updateMe: (data: UserUpdate): Promise<User> =>
     api.patch<User>('users/me/update/', data),
@@ -28,12 +39,17 @@ export const usersApi = {
 
   deleteAvatar: (): Promise<void> => api.delete<void>('users/me/avatar/'),
 
-  getProjects: (userId: number): Promise<PaginatedResponse<Project>> =>
-    api.get<PaginatedResponse<Project>>(`users/${userId}/projects/`),
+  getProjects: (userId: number): Promise<Project[]> =>
+    api.get<Project[]>(`users/${userId}/projects/`),
 
   // Note: API doesn't have a users search endpoint
-  search: (query: string): Promise<PaginatedResponse<User>> => {
+  search: (_query: string): Promise<PaginatedResponse<User>> => {
     console.warn('Users search endpoint is not available in the API');
-    return Promise.resolve({ count: 0, next: null, previous: null, results: [] });
+    return Promise.resolve({
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    });
   },
 };

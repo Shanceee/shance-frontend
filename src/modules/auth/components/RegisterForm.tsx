@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import PhoneIcon from '@/assets/phone.svg';
+import EmailIcon from '@/assets/email.svg';
 import LockIcon from '@/assets/lock.svg';
 import EyeIcon from '@/assets/eye.svg';
 import { useRegister } from '@/modules/auth';
@@ -81,16 +81,9 @@ export function RegisterForm() {
               {/* Email input */}
               <div className="w-full max-w-[400px]">
                 <div className="bg-[rgba(217,217,217,0.05)] flex gap-3 h-[58px] items-center justify-start px-5 py-2.5 relative rounded-[12px] w-full">
-                  <div
-                    className="absolute inset-0 pointer-events-none rounded-[12px]"
-                    style={{
-                      border: '1px solid',
-                      borderImage:
-                        'linear-gradient(131deg, rgba(173, 173, 173, 1) 0%, rgba(32, 30, 35, 0.2) 31%, rgba(178, 178, 178, 0.2) 68%, rgba(176, 176, 176, 1) 100%) 1',
-                    }}
-                  />
+                  <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
                   <div className="relative shrink-0 size-[17.964px]">
-                    <PhoneIcon className="block max-w-none size-full text-[#575757]" />
+                    <EmailIcon className="block max-w-none size-full text-[#575757]" />
                   </div>
                   <div className="bg-[#575757] h-5 shrink-0 w-px" />
                   <input
@@ -112,16 +105,9 @@ export function RegisterForm() {
               {/* Username input */}
               <div className="w-full max-w-[400px]">
                 <div className="bg-[rgba(217,217,217,0.05)] flex gap-3 h-[58px] items-center justify-start px-5 py-2.5 relative rounded-[12px] w-full">
-                  <div
-                    className="absolute inset-0 pointer-events-none rounded-[12px]"
-                    style={{
-                      border: '1px solid',
-                      borderImage:
-                        'linear-gradient(131deg, rgba(173, 173, 173, 1) 0%, rgba(32, 30, 35, 0.2) 31%, rgba(178, 178, 178, 0.2) 68%, rgba(176, 176, 176, 1) 100%) 1',
-                    }}
-                  />
+                  <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
                   <svg
-                    className="shrink-0"
+                    className="shrink-0 relative"
                     width="18"
                     height="18"
                     viewBox="0 0 18 18"
@@ -163,14 +149,7 @@ export function RegisterForm() {
               {/* Password input */}
               <div className="w-full max-w-[400px]">
                 <div className="bg-[rgba(217,217,217,0.05)] flex h-[58px] items-center justify-between px-5 py-2.5 relative rounded-[12px] w-full">
-                  <div
-                    className="absolute inset-0 pointer-events-none rounded-[12px]"
-                    style={{
-                      border: '1px solid',
-                      borderImage:
-                        'linear-gradient(131deg, rgba(173, 173, 173, 1) 0%, rgba(32, 30, 35, 0.2) 31%, rgba(178, 178, 178, 0.2) 68%, rgba(176, 176, 176, 1) 100%) 1',
-                    }}
-                  />
+                  <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
                   <div className="flex gap-3 items-center justify-start relative flex-1">
                     <div className="h-5 relative shrink-0 w-[16.667px]">
                       <LockIcon className="block max-w-none size-full text-[#575757]" />
@@ -203,14 +182,7 @@ export function RegisterForm() {
               {/* Password confirmation input */}
               <div className="w-full max-w-[400px]">
                 <div className="bg-[rgba(217,217,217,0.05)] flex h-[58px] items-center justify-between px-5 py-2.5 relative rounded-[12px] w-full">
-                  <div
-                    className="absolute inset-0 pointer-events-none rounded-[12px]"
-                    style={{
-                      border: '1px solid',
-                      borderImage:
-                        'linear-gradient(131deg, rgba(173, 173, 173, 1) 0%, rgba(32, 30, 35, 0.2) 31%, rgba(178, 178, 178, 0.2) 68%, rgba(176, 176, 176, 1) 100%) 1',
-                    }}
-                  />
+                  <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
                   <div className="flex gap-3 items-center justify-start relative flex-1">
                     <div className="h-5 relative shrink-0 w-[16.667px]">
                       <LockIcon className="block max-w-none size-full text-[#575757]" />

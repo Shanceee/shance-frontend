@@ -27,7 +27,10 @@ test.describe('Project Creation', () => {
 
     // Fill in required fields
     await page.fill('input#name', 'Test Project');
-    await page.fill('textarea#description', 'This is a test project description that is long enough to pass validation');
+    await page.fill(
+      'textarea#description',
+      'This is a test project description that is long enough to pass validation'
+    );
 
     // Submit the form
     await page.click('button[type="submit"]');
@@ -42,7 +45,9 @@ test.describe('Project Creation', () => {
 
     // You can add more specific assertions here based on your app's behavior
     // For example, check for a success notification
-    const notification = await page.locator('text=/успешно создан|success/i').count();
+    const notification = await page
+      .locator('text=/успешно создан|success/i')
+      .count();
     if (notification > 0) {
       console.log('Success notification found');
     }
@@ -68,7 +73,10 @@ test.describe('Project Creation', () => {
 
     // Fill in required fields
     await page.fill('input#name', 'Test Project with Image');
-    await page.fill('textarea#description', 'This is a test project with an image upload that has enough description');
+    await page.fill(
+      'textarea#description',
+      'This is a test project with an image upload that has enough description'
+    );
 
     // Upload an image
     const fileInput = page.locator('input[type="file"]');
@@ -98,13 +106,17 @@ test.describe('Project Creation', () => {
     const currentUrl = page.url();
     console.log('Current URL after submit with image:', currentUrl);
 
-    const notification = await page.locator('text=/успешно создан|success/i').count();
+    const notification = await page
+      .locator('text=/успешно создан|success/i')
+      .count();
     if (notification > 0) {
       console.log('Success notification found for project with image');
     }
   });
 
-  test('should show validation errors for empty required fields', async ({ page }) => {
+  test('should show validation errors for empty required fields', async ({
+    page,
+  }) => {
     // Navigate to login page if not authenticated
     await page.goto('http://localhost:3000/login');
 
@@ -129,7 +141,9 @@ test.describe('Project Creation', () => {
     await page.waitForTimeout(1000);
 
     // Check for error notification
-    const errorNotification = await page.locator('text=/обязательно|required|ошибка|error/i').count();
+    const errorNotification = await page
+      .locator('text=/обязательно|required|ошибка|error/i')
+      .count();
     console.log('Error notifications found:', errorNotification);
 
     expect(errorNotification).toBeGreaterThan(0);

@@ -40,32 +40,68 @@ export function useCurrentUser() {
 
 export function useLogin() {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation({
-    mutationFn: (data: LoginRequest) => authApi.login(data),
-    onSuccess: response => {
+    mutationFn: async (data: LoginRequest) => {
+      const response = await authApi.login(data);
+
+      // Verify tokens were saved before returning
+      // This ensures localStorage operations are complete
+      const savedToken = tokenManager.getToken();
+      if (!savedToken) {
+        console.error('Token was not saved to localStorage');
+        throw new Error('Failed to save authentication token');
+      }
+
+      return response;
+    },
+    onSuccess: async response => {
+      // Set user data in cache if available
       if (response.user) {
         queryClient.setQueryData<User>(queryKeys.auth.user, response.user);
       }
-      router.push('/profile');
-      queryClient.invalidateQueries({ queryKey: queryKeys.auth.all });
+
+      // Invalidate queries to refresh any cached data
+      await queryClient.invalidateQueries({ queryKey: queryKeys.auth.all });
+
+      // Double-check token exists before redirect
+      const token = tokenManager.getToken();
+      console.log('Token before redirect:', token ? 'exists' : 'missing');
+
+      if (token) {
+        // Use window.location for guaranteed redirect after successful login
+        window.location.href = '/profile';
+      } else {
+        console.error('Token missing before redirect');
+      }
+    },
+    onError: error => {
+      // Log error for debugging
+      console.error('Login failed:', error);
     },
   });
 }
 
 export function useRegister() {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation({
     mutationFn: (data: RegisterRequest) => authApi.register(data),
-    onSuccess: response => {
+    onSuccess: async response => {
+      // Set user data in cache if available
       if (response.user) {
         queryClient.setQueryData<User>(queryKeys.auth.user, response.user);
       }
-      router.push('/profile');
-      queryClient.invalidateQueries({ queryKey: queryKeys.auth.all });
+
+      // Invalidate queries to refresh any cached data
+      await queryClient.invalidateQueries({ queryKey: queryKeys.auth.all });
+
+      // Use window.location for guaranteed redirect after successful registration
+      window.location.href = '/profile';
+    },
+    onError: error => {
+      // Log error for debugging
+      console.error('Registration failed:', error);
     },
   });
 }
