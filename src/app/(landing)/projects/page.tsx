@@ -1,33 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Suspense } from 'react';
 
-import {
-  ProjectsMainContent,
-  LoadingState,
-  NoProjectsState,
-} from '@/modules/landing/projects-page';
+import { ProjectsMainContent } from '@/modules/landing/projects-page';
 import { FooterSection } from '@/modules/landing';
 import { PerfectProjectsSlider } from '@/components/ui';
-import type { Tag } from '@/types/api';
-import { useProjects, useSearchProjects } from '@/modules/projects';
-import { useCurrentUser } from '@/modules/auth';
-import { projectsData as mockProjects } from '@/data/projects';
-
-// Interface for API project data with proper typing
-interface ApiProject {
-  id: string | number;
-  title?: string;
-  name?: string;
-  description: string;
-  created_at?: string;
-  date?: string;
-  photo?: string;
-  imageSrc?: string;
-  imageAlt?: string;
-  tags?: (Tag | string)[];
-}
+import { useAllProjects } from '@/modules/projects';
+import { getProjectImageUrl } from '@/lib/utils';
+import type { FilterValues } from '@/components/ui/FilterPanel';
+import type { Project } from '@/types/api';
 
 // Interface for display project format
 interface DisplayProject {
@@ -38,71 +20,220 @@ interface DisplayProject {
   imageSrc: string;
   imageAlt: string;
   tags: string[];
+  stage?: string;
+  status?: string;
+}
+
+// Category mapping for filtering
+const categoryMapping: Record<string, string[]> = {
+  'мобильное приложение': ['приложение', 'mobile', 'мобильн'],
+  'веб-сервис': ['сервис', 'веб', 'web'],
+  платформа: ['платформа', 'platform'],
+  соцсеть: ['соцсеть', 'социальн', 'друзей', 'vibe'],
+};
+
+// Transform API project to display format
+function transformProject(project: Project): DisplayProject {
+  return {
+    id: String(project.id),
+    title: project.title,
+    description: project.description,
+    date: project.formatted_highlight_date || project.highlight_date || '',
+    imageSrc: getProjectImageUrl(project),
+    imageAlt: project.title,
+    tags: project.tags?.map(tag => tag.name) || [],
+    stage: project.stage,
+    status: project.status,
+  };
+}
+
+// Parse date from formatted string (DD/MM/YYYY or ISO format)
+function parseDate(dateString: string): Date | null {
+  if (!dateString) return null;
+
+  // Try DD/MM/YYYY format first
+  if (dateString.includes('/')) {
+    const [day, month, year] = dateString.split('/').map(Number);
+    if (day && month && year) {
+      return new Date(year, month - 1, day);
+    }
+  }
+
+  // Try ISO format
+  const isoDate = new Date(dateString);
+  if (!isNaN(isoDate.getTime())) {
+    return isoDate;
+  }
+
+  return null;
 }
 
 function ProjectsContent() {
-  const { isLoading: isAuthLoading } = useCurrentUser();
   const [searchQuery, setSearchQuery] = useState('');
-
-  const { data: projectsData, isLoading: isLoadingProjects } = useProjects({
-    page_size: 20,
+  const [filters, setFilters] = useState<FilterValues>({
+    date: [],
+    category: [],
+    stage: [],
+    tags: [],
   });
 
-  const { data: searchData, isLoading: isSearching } = useSearchProjects(
-    searchQuery,
-    searchQuery.length >= 2
-  );
+  // Fetch all projects from API
+  const { data, isLoading, isError } = useAllProjects();
 
-  // Use search results if searching, otherwise use all projects
-  const shouldUseSearch = searchQuery.length >= 2;
-  const apiProjects = shouldUseSearch
-    ? searchData?.results
-    : projectsData?.results;
-  const isLoading = shouldUseSearch ? isSearching : isLoadingProjects;
+  // Transform API projects to display format
+  // Handle both paginated response and direct array
+  const allProjects = useMemo(() => {
+    const resultsArray = data?.results ?? (Array.isArray(data) ? data : []);
+    return resultsArray.map(transformProject);
+  }, [data]);
 
-  // Show loading while checking authentication or loading projects
-  if (isAuthLoading || isLoading) {
-    return <LoadingState />;
-  }
+  // Combined filtering - search + filters
+  const filteredProjects = useMemo(() => {
+    let result = [...allProjects];
 
-  // Fallback to mock data when API returns empty (for unauthenticated users or API failures)
-  // But only for the main list, not for search results
-  const projects =
-    !shouldUseSearch && (!apiProjects || apiProjects.length === 0)
-      ? mockProjects
-      : apiProjects;
-
-  // Only show NoProjectsState when searching and no results found
-  if (!projects || projects.length === 0) {
-    return <NoProjectsState />;
-  }
-
-  // Convert API projects to display format
-  const displayProjects = projects.map(
-    (project: ApiProject): DisplayProject => {
-      return {
-        id: project.id?.toString() || String(project.id),
-        title: project.title || project.name || 'Untitled Project',
-        description: project.description,
-        date: project.created_at
-          ? new Date(project.created_at).toLocaleDateString('ru-RU')
-          : project.date || '',
-        imageSrc:
-          project.photo || project.imageSrc || '/images/faq-image-b3a29d.png',
-        imageAlt: project.title || project.imageAlt || 'Project image',
-        tags:
-          project.tags?.map((tag: Tag | string) =>
-            typeof tag === 'string'
-              ? tag
-              : `#${(tag as Tag).name || String(tag)}`
-          ) || [],
-      };
+    // Apply search query filter
+    if (searchQuery.length >= 2) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(project => {
+        const titleMatch = project.title.toLowerCase().includes(query);
+        const descriptionMatch = project.description
+          .toLowerCase()
+          .includes(query);
+        const tagsMatch = project.tags.some(tag =>
+          tag.toLowerCase().includes(query)
+        );
+        return titleMatch || descriptionMatch || tagsMatch;
+      });
     }
-  );
+
+    // Apply date filter (sorting)
+    if (filters.date.length > 0) {
+      if (filters.date.includes('самые новые')) {
+        result = [...result].sort((a, b) => {
+          const dateA = parseDate(a.date);
+          const dateB = parseDate(b.date);
+          if (!dateA || !dateB) return 0;
+          return dateB.getTime() - dateA.getTime();
+        });
+      } else if (filters.date.includes('самые старые')) {
+        result = [...result].sort((a, b) => {
+          const dateA = parseDate(a.date);
+          const dateB = parseDate(b.date);
+          if (!dateA || !dateB) return 0;
+          return dateA.getTime() - dateB.getTime();
+        });
+      }
+    }
+
+    // Apply category filter (multi-select)
+    if (filters.category.length > 0) {
+      result = result.filter(project => {
+        const titleLower = project.title.toLowerCase();
+        const descLower = project.description.toLowerCase();
+        return filters.category.some(category => {
+          const keywords = categoryMapping[category] || [
+            category.toLowerCase(),
+          ];
+          return keywords.some(
+            keyword =>
+              titleLower.includes(keyword) || descLower.includes(keyword)
+          );
+        });
+      });
+    }
+
+    // Apply stage filter (multi-select)
+    if (filters.stage.length > 0) {
+      result = result.filter(project =>
+        filters.stage.some(
+          stage =>
+            project.stage?.toLowerCase() === stage.toLowerCase() ||
+            project.status?.toLowerCase() === stage.toLowerCase()
+        )
+      );
+    }
+
+    // Apply tags filter from filters panel (multi-select)
+    if (filters.tags.length > 0) {
+      result = result.filter(project =>
+        filters.tags.some(filterTag =>
+          project.tags.some(tag =>
+            tag.toLowerCase().includes(filterTag.toLowerCase())
+          )
+        )
+      );
+    }
+
+    return result;
+  }, [allProjects, searchQuery, filters]);
 
   const handleResetFilters = () => {
     setSearchQuery('');
+    setFilters({
+      date: [],
+      category: [],
+      stage: [],
+      tags: [],
+    });
   };
+
+  const handleFiltersChange = (newFilters: FilterValues) => {
+    setFilters(newFilters);
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <main className="text-white relative">
+        <div className="h-96 bg-gray-800 animate-pulse rounded-lg mb-8" />
+        <div className="container mx-auto px-4 py-8">
+          <div className="h-64 bg-gray-800 animate-pulse rounded-lg" />
+        </div>
+      </main>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <main className="text-white relative">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">
+              Ошибка загрузки проектов
+            </h2>
+            <p className="text-gray-400">
+              Пожалуйста, попробуйте обновить страницу
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Empty state
+  if (!allProjects.length) {
+    return (
+      <main className="text-white relative">
+        <Suspense
+          fallback={
+            <div className="h-96 bg-gray-800 animate-pulse rounded-lg" />
+          }
+        >
+          <PerfectProjectsSliderWrapper />
+        </Suspense>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Проектов пока нет</h2>
+            <p className="text-gray-400">
+              Проекты появятся здесь после их создания
+            </p>
+          </div>
+        </div>
+        <FooterSection />
+      </main>
+    );
+  }
 
   return (
     <main className="text-white relative">
@@ -116,8 +247,9 @@ function ProjectsContent() {
       <ProjectsMainContent
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        filteredProjects={displayProjects}
+        filteredProjects={filteredProjects}
         onResetFilters={handleResetFilters}
+        onFiltersChange={handleFiltersChange}
       />
       <FooterSection />
     </main>
@@ -130,7 +262,7 @@ function PerfectProjectsSliderWrapper() {
 
 export default function ProjectsPage() {
   return (
-    <Suspense fallback={<LoadingState />}>
+    <Suspense fallback={<div className="min-h-screen bg-gray-900" />}>
       <ProjectsContent />
     </Suspense>
   );

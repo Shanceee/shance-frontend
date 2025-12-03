@@ -1,12 +1,10 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-// Утилита для объединения CSS классов
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Форматирование даты
 export function formatDate(
   date: Date | string,
   locale: string = 'ru-RU'
@@ -19,7 +17,6 @@ export function formatDate(
   });
 }
 
-// Форматирование времени
 export function formatTime(
   date: Date | string,
   locale: string = 'ru-RU'
@@ -31,7 +28,6 @@ export function formatTime(
   });
 }
 
-// Форматирование относительного времени
 export function formatRelativeTime(date: Date | string): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();
@@ -48,47 +44,42 @@ export function formatRelativeTime(date: Date | string): string {
   return formatDate(dateObj);
 }
 
-// Генерация уникального ID
 export function generateId(): string {
   return Math.random().toString(36).substr(2, 9);
 }
 
-// Debounce функция
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
-): (...args: Parameters<T>) => void {
+): (...funcArgs: Parameters<T>) => void {
   let timeout: NodeJS.Timeout;
 
-  return (...args: Parameters<T>) => {
+  return (...funcArgs: Parameters<T>) => {
     clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
+    timeout = setTimeout(() => func(...funcArgs), wait);
   };
 }
 
-// Throttle функция
 export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
   limit: number
-): (...args: Parameters<T>) => void {
+): (...funcArgs: Parameters<T>) => void {
   let inThrottle: boolean;
 
-  return (...args: Parameters<T>) => {
+  return (...funcArgs: Parameters<T>) => {
     if (!inThrottle) {
-      func(...args);
+      func(...funcArgs);
       inThrottle = true;
       setTimeout(() => (inThrottle = false), limit);
     }
   };
 }
 
-// Валидация email
 export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-// Валидация пароля
 export function validatePassword(password: string): {
   isValid: boolean;
   errors: string[];
@@ -117,13 +108,11 @@ export function validatePassword(password: string): {
   };
 }
 
-// Копирование в буфер обмена
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text);
     return true;
   } catch {
-    // Fallback для старых браузеров
     const textArea = document.createElement('textarea');
     textArea.value = text;
     document.body.appendChild(textArea);
@@ -134,7 +123,6 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
-// Форматирование размера файла
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Б';
 
@@ -145,7 +133,52 @@ export function formatFileSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Задержка
 export function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Get full image URL for project photos
+ * Handles relative and absolute URLs from API
+ */
+export function getImageUrl(photo: string | null | undefined): string {
+  // Use placeholder if no photo provided
+  if (!photo) {
+    return '/images/placeholder-project.jpg';
+  }
+
+  // If already absolute URL, return as is
+  if (photo.startsWith('http://') || photo.startsWith('https://')) {
+    return photo;
+  }
+
+  // Get API base URL from env or use fallback
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api/v1', '') ||
+    'http://185.171.82.179:8000';
+
+  // Prepend base URL for relative paths
+  return `${API_BASE_URL}${photo}`;
+}
+
+/**
+ * Get the best available image URL from a project
+ * Priority: images array > photo field > placeholder
+ */
+export function getProjectImageUrl(project: {
+  photo?: string | null;
+  images?: Array<{ image: string }> | null;
+}): string {
+  // First check images array (API stores images here, not in photo field)
+  if (project.images && project.images.length > 0 && project.images[0]?.image) {
+    return getImageUrl(project.images[0].image);
+  }
+
+  // Fall back to photo field
+  if (project.photo) {
+    return getImageUrl(project.photo);
+  }
+
+  // Default placeholder
+  return '/images/placeholder-project.jpg';
 }

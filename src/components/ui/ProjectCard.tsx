@@ -2,8 +2,37 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 import { ProjectData } from '@/data/projects';
+
+// Tooltip component for showing full text on hover
+function Tooltip({
+  children,
+  text,
+}: {
+  children: React.ReactNode;
+  text: string;
+}) {
+  const [show, setShow] = useState(false);
+
+  return (
+    <div
+      className="relative inline-block"
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
+      {show && text && (
+        <div className="absolute z-[100] top-full left-0 mt-2 px-3 py-2 bg-[#1a1a1a] border border-white/20 rounded-lg shadow-xl max-w-[350px] pointer-events-none animate-fade-in">
+          <p className="text-sm font-montserrat text-white whitespace-pre-wrap break-words">
+            {text}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export interface ProjectCardProps {
   project: ProjectData;
@@ -15,14 +44,14 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
   if (!project) {
     return (
       <div
-        className={`relative group transition-all duration-300 ${className} w-full`}
+        className={`relative group transition-all duration-300 ${className}`}
       >
         <div
-          className="rounded-[20px] p-6 relative overflow-hidden"
+          className="rounded-[23px] p-6 relative min-h-[350px] lg:h-[368px] w-full"
           style={{
             background:
               'linear-gradient(135deg, rgba(35, 35, 35, 0.9) 0%, rgba(35, 45, 40, 0.9) 100%)',
-            border: '1px solid rgba(0, 168, 81, 0.3)',
+            border: '2px solid rgba(0, 168, 81, 0.3)',
           }}
         >
           <div className="flex items-center justify-center h-full">
@@ -37,14 +66,14 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
   if (!project.title || !project.description || !project.tags) {
     return (
       <div
-        className={`relative group transition-all duration-300 ${className} w-full`}
+        className={`relative group transition-all duration-300 ${className}`}
       >
         <div
-          className="rounded-[20px] p-6 relative overflow-hidden"
+          className="rounded-[23px] p-6 relative min-h-[350px] lg:h-[368px] w-full"
           style={{
             background:
               'linear-gradient(135deg, rgba(35, 35, 35, 0.9) 0%, rgba(35, 45, 40, 0.9) 100%)',
-            border: '1px solid rgba(0, 168, 81, 0.3)',
+            border: '2px solid rgba(0, 168, 81, 0.3)',
           }}
         >
           <div className="flex items-center justify-center h-full">
@@ -60,107 +89,157 @@ export function ProjectCard({ project, className = '' }: ProjectCardProps) {
   return (
     <Link href={`/projects/${project.id}`}>
       <div
-        className={`relative group transition-all duration-300 ${className} w-full`}
+        className={`relative group transition-all duration-300 ${className}`}
       >
+        {/* Main Card Container - Fixed dimensions 663x368 for desktop */}
         <div
-          className="rounded-[20px] p-6 relative overflow-hidden flex gap-6"
+          className="rounded-[23px] p-4 sm:p-6 relative flex flex-col lg:flex-row gap-4 lg:gap-5 h-full min-h-[350px] lg:h-[368px] lg:min-h-[368px] lg:max-h-[368px] w-full"
           style={{
             background:
               'linear-gradient(135deg, rgba(35, 35, 35, 0.9) 0%, rgba(35, 45, 40, 0.9) 100%)',
-            border: '1px solid rgba(0, 168, 81, 0.3)',
+            border: '2px solid rgba(0, 168, 81, 0.3)',
           }}
         >
-          {/* Left Section - ~70% width */}
+          {/* Left Section - Main Content */}
           <div className="flex-1 flex flex-col min-w-0">
             {/* Title and Date */}
-            <h3 className="text-2xl font-unbounded font-semibold text-white leading-tight mb-1">
-              {project.title}
-            </h3>
-            <p className="text-sm font-miracode text-white/60 mb-4">
-              {project.date}
-            </p>
+            <div className="mb-2 lg:mb-3">
+              <Tooltip text={project.title}>
+                <h3 className="text-lg sm:text-xl lg:text-xl font-unbounded font-semibold text-white leading-tight mb-1 line-clamp-1 cursor-default">
+                  {project.title}
+                </h3>
+              </Tooltip>
+              <p className="text-xs sm:text-sm font-miracode text-white/60">
+                {project.date}
+              </p>
+            </div>
 
-            {/* Image with description overlay */}
-            <div className="relative w-full h-[200px] rounded-[16px] overflow-hidden mb-4">
-              <Image
-                src={project.imageSrc}
-                alt={project.imageAlt}
-                fill
-                className="object-cover"
-                onError={e => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                }}
-              />
-              {/* Description overlay at bottom */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                <p className="text-sm font-montserrat text-white/90 line-clamp-2">
-                  {project.description}
-                </p>
+            {/* Image with Description Overlay - Increased border radius to 25px */}
+            <div className="relative w-full flex-1 min-h-[140px] sm:min-h-[160px] lg:min-h-[180px] lg:max-h-[200px] rounded-[25px] mb-3 lg:mb-3 bg-[#1a1a1a]">
+              <div className="absolute inset-0 rounded-[25px] overflow-hidden">
+                <Image
+                  src={project.imageSrc}
+                  alt={project.imageAlt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  onError={e => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
               </div>
             </div>
 
-            {/* Tags and Arrow button row */}
-            <div className="flex items-center justify-between mt-auto">
-              <div className="flex items-center gap-4 flex-wrap">
-                {project.tags.slice(0, 5).map((tag, index) => (
+            {/* Tags Row - without arrow button */}
+            <div className="flex items-center gap-2 sm:gap-3 overflow-hidden flex-1 min-w-0 mt-auto">
+              {project.tags.slice(0, 3).map((tag, index) => (
+                <span
+                  key={index}
+                  className="text-xs sm:text-sm font-miracode text-white/50 whitespace-nowrap"
+                >
+                  {tag.startsWith('#') ? tag : `#${tag}`}
+                </span>
+              ))}
+              <span className="hidden sm:inline-flex gap-3">
+                {project.tags.slice(3, 5).map((tag, index) => (
                   <span
-                    key={index}
-                    className="text-sm font-miracode text-white/50"
+                    key={index + 3}
+                    className="text-sm font-miracode text-white/50 whitespace-nowrap"
                   >
                     {tag.startsWith('#') ? tag : `#${tag}`}
                   </span>
                 ))}
-              </div>
-              <button className="w-[48px] h-[48px] bg-[#00A851] rounded-full flex items-center justify-center hover:bg-[#008f45] transition-colors flex-shrink-0">
-                <Image
-                  src="/images/arrow.svg"
-                  width={24}
-                  height={24}
-                  alt="Arrow"
-                />
-              </button>
+              </span>
             </div>
           </div>
 
-          {/* Right Section - Info Panel */}
-          <div className="w-[180px] flex-shrink-0 flex flex-col gap-4">
-            {/* Stage */}
-            <div className="flex flex-col gap-2">
-              <span className="text-base font-unbounded text-white">
+          {/* Right Section - Info Panel (Desktop only) */}
+          <div className="hidden lg:flex w-[180px] flex-shrink-0 flex-col gap-3 justify-start">
+            {/* Стадия (Stage) */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-sm font-unbounded text-white/90">
                 Стадия:
               </span>
-              <div className="px-4 py-2 rounded-full bg-[#2a2a2a] border border-white/20 text-center">
-                <span className="text-sm font-unbounded text-white">
-                  {project.stage || 'прототип'}
-                </span>
-              </div>
+              <Tooltip text={project.stage || 'прототип'}>
+                <div className="px-4 py-2 rounded-[20px] bg-[#2a2a2a] border border-white/20 text-center cursor-default">
+                  <span className="text-sm font-unbounded text-white truncate block">
+                    {project.stage || 'прототип'}
+                  </span>
+                </div>
+              </Tooltip>
             </div>
 
-            {/* Status */}
-            <div className="flex flex-col gap-2">
-              <span className="text-base font-unbounded text-white">
+            {/* Статус (Status) */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-sm font-unbounded text-white/90">
                 Статус:
               </span>
-              <div className="px-4 py-2 rounded-full bg-[#2a2a2a] border border-white/20 text-center">
-                <span className="text-sm font-unbounded text-white">
-                  {project.status || 'прототип'}
-                </span>
-              </div>
+              <Tooltip text={project.status || 'прототип'}>
+                <div className="px-4 py-2 rounded-[20px] bg-[#2a2a2a] border border-white/20 text-center cursor-default">
+                  <span className="text-sm font-unbounded text-white truncate block">
+                    {project.status || 'прототип'}
+                  </span>
+                </div>
+              </Tooltip>
             </div>
 
-            {/* Team */}
-            <div className="flex flex-col gap-2">
-              <span className="text-base font-unbounded text-white">
+            {/* Команда (Team) */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-sm font-unbounded text-white/90">
                 Команда:
               </span>
-              <div className="px-4 py-2 rounded-full bg-[#2a2a2a] border border-white/20 text-center">
-                <span className="text-sm font-unbounded text-white">
-                  {project.teamSize || 'до 20 чел'}
-                </span>
-              </div>
+              <Tooltip text={project.teamSize || 'до 20 чел'}>
+                <div className="px-4 py-2 rounded-[20px] bg-[#2a2a2a] border border-white/20 text-center cursor-default">
+                  <span className="text-sm font-unbounded text-white truncate block">
+                    {project.teamSize || 'до 20 чел'}
+                  </span>
+                </div>
+              </Tooltip>
             </div>
           </div>
+
+          {/* Mobile Info Panel - Horizontal Layout */}
+          <div className="flex lg:hidden gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-unbounded text-white/70">
+                Стадия:
+              </span>
+              <span className="text-xs font-unbounded text-white px-3 py-1.5 rounded-[20px] bg-[#2a2a2a] border border-white/20">
+                {project.stage || 'прототип'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-unbounded text-white/70">
+                Статус:
+              </span>
+              <span className="text-xs font-unbounded text-white px-3 py-1.5 rounded-[20px] bg-[#2a2a2a] border border-white/20">
+                {project.status || 'прототип'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-unbounded text-white/70">
+                Команда:
+              </span>
+              <span className="text-xs font-unbounded text-white px-3 py-1.5 rounded-[20px] bg-[#2a2a2a] border border-white/20">
+                {project.teamSize || 'до 20 чел'}
+              </span>
+            </div>
+          </div>
+
+          {/* Green Arrow Button - Bottom-right corner of entire card */}
+          <button
+            className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 bg-[#00A851] rounded-full flex items-center justify-center hover:bg-[#008f45] transition-colors flex-shrink-0 z-10"
+            aria-label="View project details"
+          >
+            <Image
+              src="/images/arrow.svg"
+              width={20}
+              height={20}
+              alt="Arrow"
+              className="w-5 h-5 sm:w-6 sm:h-6"
+            />
+          </button>
         </div>
       </div>
     </Link>

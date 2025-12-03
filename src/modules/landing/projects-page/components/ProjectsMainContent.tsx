@@ -1,6 +1,7 @@
 'use client';
 
 import type { ProjectData } from '@/data/projects';
+import type { FilterValues } from '@/components/ui/FilterPanel';
 
 import { SearchBar } from './SearchBar';
 import { ProjectsGrid } from './ProjectsGrid';
@@ -11,6 +12,7 @@ interface ProjectsMainContentProps {
   onSearchChange: (value: string) => void;
   filteredProjects: ProjectData[];
   onResetFilters: () => void;
+  onFiltersChange?: (filters: FilterValues) => void;
 }
 
 export function ProjectsMainContent({
@@ -18,6 +20,7 @@ export function ProjectsMainContent({
   onSearchChange,
   filteredProjects,
   onResetFilters,
+  onFiltersChange,
 }: ProjectsMainContentProps) {
   return (
     <main className="relative z-10 px-4 sm:px-6 lg:px-8 xl:px-10 pb-16 sm:pb-20">
@@ -32,7 +35,11 @@ export function ProjectsMainContent({
         </div>
 
         {/* Search Bar */}
-        <SearchBar searchQuery={searchQuery} onSearchChange={onSearchChange} />
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={onSearchChange}
+          onFiltersChange={onFiltersChange}
+        />
 
         {/* Projects Grid */}
         <div className="mb-8 sm:mb-12">

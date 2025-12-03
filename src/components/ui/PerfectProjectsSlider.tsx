@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import Image from 'next/image';
 
-import { ProjectData, projectsData } from '@/data/projects';
-import { projectsApi } from '@/modules/projects';
+import { useAllProjects } from '@/modules/projects';
+import { getProjectImageUrl } from '@/lib/utils';
 
 import { ProjectCard } from './ProjectCard';
 
@@ -22,46 +21,27 @@ interface PerfectProjectsSliderProps {
 export function PerfectProjectsSlider({
   className = '',
 }: PerfectProjectsSliderProps) {
-  const [projects, setProjects] = useState<ProjectData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Use new public API endpoint /projects/all/
+  const { data, isLoading, isError } = useAllProjects();
 
-  useEffect(() => {
-    const fetchPerfectProjects = async () => {
-      try {
-        const response = await projectsApi.list({ page_size: 10 });
+  // Safely extract results array - handle both paginated and array responses
+  const resultsArray = data?.results ?? (Array.isArray(data) ? data : []);
 
-        // If API returns empty, use mock data
-        if (!response.results || response.results.length === 0) {
-          setProjects(projectsData);
-          return;
-        }
+  // Transform API projects to display format
+  const projects = resultsArray.map(project => ({
+    id: String(project.id),
+    title: project.title,
+    description: project.description,
+    date: project.formatted_highlight_date || project.highlight_date || '',
+    imageSrc: getProjectImageUrl(project),
+    imageAlt: project.title,
+    tags: project.tags?.map((tag: { name: string }) => tag.name) || [],
+    stage: project.stage || 'prototype',
+    status: project.status || 'in_progress',
+    teamSize: project.team_capacity_label || 'до 20 чел',
+  }));
 
-        const mappedProjects = response.results.map(p => ({
-          id: String(p.id),
-          title: p.title || p.name,
-          description: p.description,
-          date: p.created_at
-            ? new Date(p.created_at).toLocaleDateString('ru-RU')
-            : '',
-          imageSrc: p.photo || '/images/faq-image-b3a29d.png',
-          imageAlt: p.title || p.name,
-          tags: p.tags?.map(t => `#${t.name}`) || [],
-        }));
-        setProjects(mappedProjects as ProjectData[]);
-      } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('Ошибка загрузки проектов:', error);
-        }
-        // Fallback to mock data on error
-        setProjects(projectsData);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchPerfectProjects();
-  }, []);
-
-  if (isLoading) {
+  if (isLoading || (!data && !isError)) {
     return (
       <section className={`relative py-16 ${className}`}>
         <div className="mb-16 px-4 sm:px-6 lg:px-8 xl:px-10 text-center">
@@ -72,7 +52,26 @@ export function PerfectProjectsSlider({
           </h2>
         </div>
         <div className="flex justify-center items-center h-64">
-          <div className="text-white">Загрузка...</div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white"></div>
+        </div>
+      </section>
+    );
+  }
+
+  if (projects.length === 0) {
+    return (
+      <section className={`relative py-16 ${className}`}>
+        <div className="mb-16 px-4 sm:px-6 lg:px-8 xl:px-10 text-center">
+          <h2 className="text-4xl md:text-5xl font-unbounded font-normal leading-tight">
+            <span className="bg-gradient-to-t from-gray-400/30 to-white bg-clip-text text-transparent">
+              Твои идеальные проекты
+            </span>
+          </h2>
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-white/60 font-montserrat">
+            Проекты не найдены
+          </div>
         </div>
       </section>
     );
@@ -96,7 +95,7 @@ export function PerfectProjectsSlider({
       <div className="relative max-w-none mx-auto px-4">
         <Swiper
           modules={[Navigation, Pagination]}
-          spaceBetween={16}
+          spaceBetween={24}
           slidesPerView={1}
           navigation={{
             nextEl: '.swiper-button-next-custom',
@@ -106,28 +105,22 @@ export function PerfectProjectsSlider({
             clickable: true,
             el: '.swiper-pagination-custom',
           }}
-          loop={true}
+          loop={projects.length > 3}
           breakpoints={{
-            640: {
-              slidesPerView: 2,
-              spaceBetween: 20,
-            },
             768: {
-              slidesPerView: 3,
+              slidesPerView: 'auto',
               spaceBetween: 24,
             },
             1024: {
-              slidesPerView: 3,
+              slidesPerView: 'auto',
               spaceBetween: 32,
             },
           }}
           className="perfect-projects-swiper"
         >
           {projects.map(project => (
-            <SwiperSlide key={project.id}>
-              <div className="w-full">
-                <ProjectCard project={project} />
-              </div>
+            <SwiperSlide key={project.id} className="!w-full lg:!w-[663px]">
+              <ProjectCard project={project} />
             </SwiperSlide>
           ))}
         </Swiper>

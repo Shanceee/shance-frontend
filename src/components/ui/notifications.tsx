@@ -5,7 +5,6 @@ import React, { useEffect } from 'react';
 import { useUIStore } from '@/stores';
 import { cn } from '@/lib/utils';
 
-// Иконки для разных типов уведомлений
 const NotificationIcon = ({ type }: { type: string }) => {
   switch (type) {
     case 'success':
@@ -69,22 +68,20 @@ const NotificationIcon = ({ type }: { type: string }) => {
   }
 };
 
-// Компонент отдельного уведомления
 const NotificationItem: React.FC<{
   id: string;
   type: 'success' | 'error' | 'warning' | 'info';
   title: string;
   message: string;
   onRemove: (id: string) => void;
-}> = ({ id: _notificationId, type, title, message, onRemove }) => {
+}> = ({ id, type, title, message, onRemove }) => {
   useEffect(() => {
-    // Автоматически удаляем уведомление через 5 секунд
     const timer = setTimeout(() => {
-      onRemove(_notificationId);
+      onRemove(id);
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [_notificationId, onRemove]);
+  }, [id, onRemove]);
 
   return (
     <div
@@ -111,7 +108,7 @@ const NotificationItem: React.FC<{
       </div>
 
       <button
-        onClick={() => onRemove(_notificationId)}
+        onClick={() => onRemove(id)}
         className="flex-shrink-0 ml-3 text-gray-400 hover:text-gray-600 transition-colors"
         aria-label="Закрыть уведомление"
       >
@@ -127,7 +124,6 @@ const NotificationItem: React.FC<{
   );
 };
 
-// Главный компонент уведомлений
 export const Notifications: React.FC = () => {
   const { notifications, removeNotification, clearNotifications } =
     useUIStore();
@@ -138,7 +134,6 @@ export const Notifications: React.FC = () => {
 
   return (
     <div className="fixed top-4 right-4 z-50 w-96 max-w-sm">
-      {/* Заголовок с кнопкой очистки */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-medium text-gray-900 font-unbounded">
           Уведомления ({notifications.length})
@@ -151,7 +146,6 @@ export const Notifications: React.FC = () => {
         </button>
       </div>
 
-      {/* Список уведомлений */}
       <div className="space-y-2">
         {notifications.map(notification => (
           <NotificationItem

@@ -41,5 +41,11 @@ export const authApi = {
     }
   },
 
-  getCurrentUser: (): Promise<User> => api.get<User>('users/me/'),
+  getCurrentUser: (): Promise<User> => {
+    // Prevent API call if no token exists
+    if (!tokenManager.isAuthenticated()) {
+      return Promise.reject(new Error('Not authenticated'));
+    }
+    return api.get<User>('users/me/');
+  },
 };

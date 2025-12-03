@@ -1,8 +1,10 @@
 export { projectsApi } from './api';
 export {
+  useAllProjects,
   useProjects,
   useInfiniteProjects,
   useProject,
+  usePublicProject,
   useCreateProject,
   useUpdateProject,
   useDeleteProject,
@@ -12,7 +14,6 @@ export {
   useProjectImages,
   useUploadProjectImage,
   useDeleteProjectImage,
-  useUploadProjectPhoto,
   useSearchProjects,
   useCreateProjectWithImage,
 } from './hooks';

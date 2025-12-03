@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -9,13 +9,39 @@ import { tokenManager } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
+  const [isClient, setIsClient] = useState(false);
 
-  // Redirect if already authenticated
   useEffect(() => {
-    if (tokenManager.getToken()) {
+    setIsClient(true);
+  }, []);
+
+  // Check authentication only once on mount
+  useEffect(() => {
+    if (!isClient) return;
+
+    const token = tokenManager.getToken();
+    if (token) {
+      // User is already logged in, redirect to profile
       router.replace('/profile');
+    } else {
+      // No token, show login form
+      setIsChecking(false);
     }
-  }, [router]);
+  }, [isClient, router]);
+
+  // Show loading state while checking auth
+  if (!isClient || isChecking) {
+    return (
+      <div className="min-h-screen bg-[#161419] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00A851] mx-auto mb-4"></div>
+          <p className="text-white/80 font-montserrat">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#161419] relative overflow-hidden">
       {/* Decorative blurred ellipses */}

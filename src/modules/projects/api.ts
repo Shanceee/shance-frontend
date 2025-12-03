@@ -21,6 +21,11 @@ interface ProjectListParams {
 }
 
 export const projectsApi = {
+  // Public endpoint - all projects without authentication
+  listAll: (params?: ProjectListParams): Promise<PaginatedResponse<Project>> =>
+    api.get<PaginatedResponse<Project>>('projects/all/', params),
+
+  // Authenticated endpoint - user's own projects only
   list: (params?: ProjectListParams): Promise<PaginatedResponse<Project>> =>
     api.get<PaginatedResponse<Project>>('projects/', params),
 
@@ -57,7 +62,4 @@ export const projectsApi = {
 
   deleteImage: (projectId: number, imageId: number): Promise<void> =>
     api.delete<void>(`projects/${projectId}/images/${imageId}/`),
-
-  uploadPhoto: (projectId: number, formData: FormData): Promise<Project> =>
-    api.upload<Project>(`projects/${projectId}/photo/`, formData),
 };

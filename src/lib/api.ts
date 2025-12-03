@@ -93,6 +93,8 @@ const baseApi: KyInstance = ky.create({
     beforeRequest: [
       request => {
         const token = tokenManager.getToken();
+
+        // Add Authorization header if token exists
         if (token) {
           request.headers.set('Authorization', `JWT ${token}`);
         }

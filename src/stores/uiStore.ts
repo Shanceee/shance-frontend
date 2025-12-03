@@ -26,31 +26,31 @@ export interface UIState {
   searchQuery: string;
   searchResults: Record<string, unknown>[];
 
-  setTheme: (_theme: 'light' | 'dark' | 'system') => void;
+  setTheme: (theme: 'light' | 'dark' | 'system') => void;
   toggleSidebar: () => void;
 
   openModal: (
-    _id: string,
-    _component: React.ComponentType<Record<string, unknown>>,
-    _props?: Record<string, unknown>
+    id: string,
+    component: React.ComponentType<Record<string, unknown>>,
+    props?: Record<string, unknown>
   ) => void;
 
-  closeModal: (_id: string) => void;
+  closeModal: (id: string) => void;
 
   addNotification: (
-    _notification: Omit<Notification, 'id' | 'createdAt'>
+    notification: Omit<Notification, 'id' | 'createdAt'>
   ) => void;
 
-  removeNotification: (_id: string) => void;
+  removeNotification: (id: string) => void;
   clearNotifications: () => void;
 
-  setLoading: (_loading: boolean) => void;
+  setLoading: (loading: boolean) => void;
 
-  setError: (_error: string | null) => void;
+  setError: (error: string | null) => void;
 
-  setSearchQuery: (_query: string) => void;
+  setSearchQuery: (query: string) => void;
 
-  setSearchResults: (_results: Record<string, unknown>[]) => void;
+  setSearchResults: (results: Record<string, unknown>[]) => void;
   clearSearch: () => void;
 }
 

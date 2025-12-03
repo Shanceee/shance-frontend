@@ -70,16 +70,16 @@ export interface UserUpdate {
 
 export type ProjectStage =
   | 'idea'
-  | 'concept'
-  | 'development'
-  | 'testing'
-  | 'launch'
-  | 'growth';
-export type ProjectStatus =
   | 'prototype'
   | 'mvp'
+  | 'launch'
+  | 'growth'
+  | 'scaling';
+export type ProjectStatus =
+  | 'prototype'
+  | 'in_progress'
   | 'beta'
-  | 'release'
+  | 'live'
   | 'archived';
 
 export interface Project {
@@ -109,7 +109,7 @@ export interface ProjectCreate {
   status?: ProjectStatus;
   highlight_date?: string;
   team_capacity_label?: string;
-  tag_ids?: number[];
+  // Note: Tags are managed separately via project update after creation
 }
 
 export type ProjectUpdate = Partial<ProjectCreate>;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,67 +14,70 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
   const router = useRouter();
   const logout = useLogout();
-  const { data: user, isLoading } = useCurrentUser();
+  const hasRedirected = useRef(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // Only fetch user data if we have a token
+  const hasToken = tokenManager.getToken();
+  const { data: user, isLoading, isError } = useCurrentUser();
 
-  // Redirect to login if no token or no user after loading
+  // Handle all redirects in useEffect to avoid setState during render
   useEffect(() => {
-    if (isMounted && !tokenManager.getToken()) {
-      router.push('/login');
+    const token = tokenManager.getToken();
+
+    // No token - redirect to login
+    if (!token) {
+      if (!hasRedirected.current) {
+        hasRedirected.current = true;
+        router.replace('/login');
+      }
+      return;
     }
-  }, [isMounted, router]);
 
+    // Has token - allow render
+    setShouldRender(true);
+  }, [router]);
+
+  // Handle error state redirect in separate effect
+  // Only clear tokens and redirect if we explicitly got an auth error
   useEffect(() => {
-    if (isMounted && !isLoading && !user) {
-      router.push('/login');
+    // Only handle actual errors, not initial loading states
+    if (isError && !isLoading) {
+      if (!hasRedirected.current) {
+        hasRedirected.current = true;
+        tokenManager.clearTokens();
+        router.replace('/login');
+      }
     }
-  }, [isMounted, isLoading, user, router]);
+  }, [isLoading, isError, router]);
 
   const handleLogout = () => {
     logout.mutate();
     setIsSettingsOpen(false);
   };
 
-  // If not mounted or no token, show loading (will redirect via useEffect)
-  if (!isMounted || !tokenManager.getToken()) {
-    return (
-      <div className="min-h-screen bg-[#161419] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00A851] mx-auto mb-4"></div>
-          <p className="text-white/80 font-montserrat">Loading...</p>
-        </div>
-      </div>
-    );
+  // Don't render until we've confirmed we have a token
+  if (!shouldRender) {
+    return null;
   }
 
-  // Show loading while fetching user
+  // Show loading only when we have a token and are verifying it
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#161419] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00A851] mx-auto mb-4"></div>
-          <p className="text-white/80 font-montserrat">Loading...</p>
+          <p className="text-white/80 font-montserrat">Загрузка профиля...</p>
         </div>
       </div>
     );
   }
 
-  // If query failed and no user, show redirecting (redirect happens via useEffect)
+  // If still no user after loading, show nothing (redirect happening in effect)
   if (!user) {
-    return (
-      <div className="min-h-screen bg-[#161419] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00A851] mx-auto mb-4"></div>
-          <p className="text-white/80 font-montserrat">Redirecting...</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -122,8 +125,8 @@ export default function DashboardLayout({
                 <span>Главная</span>
               </Link>
 
-              <button
-                onClick={() => router.push('/favorites')}
+              <Link
+                href="/projects"
                 className="flex items-center space-x-2 text-white/80 hover:text-white font-montserrat transition-colors"
               >
                 <svg
@@ -136,11 +139,11 @@ export default function DashboardLayout({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                   />
                 </svg>
-                <span>Избранное</span>
-              </button>
+                <span>Проекты</span>
+              </Link>
 
               <Link
                 href="/profile"
@@ -289,12 +292,10 @@ export default function DashboardLayout({
                   <span>Главная</span>
                 </Link>
 
-                <button
-                  onClick={() => {
-                    router.push('/favorites');
-                    setIsSettingsOpen(false);
-                  }}
-                  className="flex items-center space-x-2 text-white/80 hover:text-white font-montserrat transition-colors py-2 w-full text-left"
+                <Link
+                  href="/projects"
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="flex items-center space-x-2 text-white/80 hover:text-white font-montserrat transition-colors py-2"
                 >
                   <svg
                     className="w-5 h-5"
@@ -306,11 +307,11 @@ export default function DashboardLayout({
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                     />
                   </svg>
-                  <span>Избранное</span>
-                </button>
+                  <span>Проекты</span>
+                </Link>
 
                 <button
                   onClick={() => {

@@ -31,7 +31,6 @@ export default function CreateProjectForm({
     subtitle: '',
     description: '',
     status: 'prototype',
-    tag_ids: [],
   });
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -48,8 +47,7 @@ export default function CreateProjectForm({
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Validate file size (5MB max)
-      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
         setErrors(prev => ({
           ...prev,
@@ -58,7 +56,6 @@ export default function CreateProjectForm({
         return;
       }
 
-      // Validate file type
       const allowedTypes = [
         'image/jpeg',
         'image/jpg',
@@ -73,7 +70,6 @@ export default function CreateProjectForm({
         return;
       }
 
-      // Clear any previous image errors
       setErrors(prev => ({ ...prev, image: '' }));
 
       setSelectedImage(file);
@@ -124,7 +120,6 @@ export default function CreateProjectForm({
 
     if (!validateForm()) return;
 
-    // If we have both callbacks, prefer the one with image support
     if (onSubmitWithImage) {
       onSubmitWithImage({
         projectData: formData,
@@ -138,7 +133,6 @@ export default function CreateProjectForm({
   return (
     <div className="max-w-4xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-unbounded font-bold text-white mb-2">
@@ -171,15 +165,12 @@ export default function CreateProjectForm({
           </Button>
         </div>
 
-        {/* Main Form */}
         <div className="bg-white/5 backdrop-blur-sm rounded-[20px] p-8 space-y-8">
-          {/* Project Image */}
           <div>
             <label className="block text-lg font-unbounded font-medium text-white mb-4">
               Project Image
             </label>
             <div className="flex items-start gap-6">
-              {/* Image Preview */}
               <div className="flex-shrink-0">
                 {imagePreview ? (
                   <div className="relative w-40 h-40 rounded-[15px] overflow-hidden bg-white/10">
@@ -236,7 +227,6 @@ export default function CreateProjectForm({
                 )}
               </div>
 
-              {/* Upload Instructions */}
               <div className="flex-1">
                 <p className="text-white/80 font-montserrat mb-2">
                   Upload a high-quality image that represents your project
@@ -272,7 +262,6 @@ export default function CreateProjectForm({
             )}
           </div>
 
-          {/* Project Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Input
@@ -324,7 +313,6 @@ export default function CreateProjectForm({
             )}
           </div>
 
-          {/* Project Status */}
           <div>
             <label className="block text-sm font-montserrat text-white/80 mb-2">
               Project Status
@@ -337,15 +325,14 @@ export default function CreateProjectForm({
               className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white font-montserrat focus:outline-none focus:border-[#00A851] focus:ring-2 focus:ring-[#00A851]/20 transition-all duration-300"
             >
               <option value="prototype">Prototype</option>
-              <option value="mvp">MVP</option>
+              <option value="in_progress">In Progress</option>
               <option value="beta">Beta</option>
-              <option value="release">Release</option>
+              <option value="live">Live</option>
               <option value="archived">Archived</option>
             </select>
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center justify-end gap-4">
           <Button
             type="button"

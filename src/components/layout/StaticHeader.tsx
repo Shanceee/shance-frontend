@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { useSmoothScroll } from '@/hooks';
 import { useCurrentUser, useLogout } from '@/modules/auth';
+import { getImageUrl } from '@/lib/utils';
 
 export function StaticHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -123,8 +124,25 @@ export function StaticHeader() {
                   onClick={toggleUserMenu}
                   className="flex items-center space-x-2 px-4 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 font-montserrat"
                 >
-                  <div className="w-6 h-6 bg-[#00A851] rounded-full flex items-center justify-center text-xs font-bold">
-                    {user.email?.charAt(0).toUpperCase() || 'U'}
+                  <div className="relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
+                    {user.avatar ? (
+                      <Image
+                        src={getImageUrl(user.avatar)}
+                        alt="Avatar"
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-[#00A851] to-[#008f45] flex items-center justify-center">
+                        <span className="text-xs font-bold text-white">
+                          {user.first_name?.charAt(0) ||
+                            user.username?.charAt(0)?.toUpperCase() ||
+                            user.email?.charAt(0)?.toUpperCase() ||
+                            'U'}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <span className="text-sm">{user.email}</span>
                   <svg
@@ -179,8 +197,25 @@ export function StaticHeader() {
                 onClick={handleProfileClick}
                 className="flex items-center space-x-2 px-3 py-2 text-white border border-white/20 rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 font-montserrat"
               >
-                <div className="w-5 h-5 bg-[#00A851] rounded-full flex items-center justify-center text-xs font-bold">
-                  {user.email?.charAt(0).toUpperCase() || 'U'}
+                <div className="relative w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+                  {user.avatar ? (
+                    <Image
+                      src={getImageUrl(user.avatar)}
+                      alt="Avatar"
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#00A851] to-[#008f45] flex items-center justify-center">
+                      <span className="text-[10px] font-bold text-white">
+                        {user.first_name?.charAt(0) ||
+                          user.username?.charAt(0)?.toUpperCase() ||
+                          user.email?.charAt(0)?.toUpperCase() ||
+                          'U'}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <span className="text-sm truncate max-w-[100px]">
                   {user.email}

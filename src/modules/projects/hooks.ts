@@ -6,6 +6,7 @@ import {
   useQueryClient,
   useInfiniteQuery,
 } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { queryKeys } from '@/lib/queryClient';
 import type { ProjectCreate, ProjectUpdate, ProjectInvite } from '@/types/api';
@@ -22,6 +23,18 @@ interface UseProjectsParams {
   enabled?: boolean;
 }
 
+// Hook for public projects list (all projects without authentication)
+export function useAllProjects(params: UseProjectsParams = {}) {
+  const { enabled = true, ...queryParams } = params;
+
+  return useQuery({
+    queryKey: queryKeys.projects.all(queryParams),
+    queryFn: () => projectsApi.listAll(queryParams),
+    enabled,
+  });
+}
+
+// Hook for authenticated user's own projects
 export function useProjects(params: UseProjectsParams = {}) {
   const { enabled = true, ...queryParams } = params;
 
@@ -42,9 +55,9 @@ export function useInfiniteProjects(
     queryFn: ({ pageParam = 1 }) =>
       projectsApi.list({ ...queryParams, page: pageParam }),
     initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (lastPage, _allPages) => {
       if (!lastPage.next) return undefined;
-      return allPages.length + 1;
+      return _allPages.length + 1;
     },
     enabled,
   });
@@ -58,6 +71,31 @@ export function useProject(id: number, enabled = true) {
   });
 }
 
+/**
+ * Hook for getting a public project by ID from the cached public projects list
+ * This avoids the 403 error from the authenticated /projects/{id}/ endpoint
+ * by using data from the public /projects/all/ endpoint
+ */
+export function usePublicProject(id: number, enabled = true) {
+  const { data: allProjectsData, isLoading: isLoadingAll } = useAllProjects({ enabled });
+
+  const project = useMemo(() => {
+    if (!allProjectsData) return null;
+
+    // Handle both paginated response (with .results) and direct array response
+    const projectsArray = allProjectsData.results ?? (Array.isArray(allProjectsData) ? allProjectsData : []);
+
+    return projectsArray.find(p => p.id === id) || null;
+  }, [allProjectsData, id]);
+
+  return {
+    data: project,
+    isLoading: isLoadingAll,
+    isError: enabled && !isLoadingAll && allProjectsData && !project,
+    error: enabled && !isLoadingAll && allProjectsData && !project ? new Error('Project not found') : null,
+  };
+}
+
 export function useCreateProject() {
   const queryClient = useQueryClient();
 
@@ -65,6 +103,9 @@ export function useCreateProject() {
     mutationFn: (data: ProjectCreate) => projectsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.allLists(),
+      });
     },
   });
 }
@@ -80,6 +121,9 @@ export function useUpdateProject() {
         queryKey: queryKeys.projects.detail(id),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.allLists(),
+      });
     },
   });
 }
@@ -91,6 +135,9 @@ export function useDeleteProject() {
     mutationFn: (id: number) => projectsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.allLists(),
+      });
     },
   });
 }
@@ -164,6 +211,13 @@ export function useUploadProjectImage() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.images(projectId),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.allLists(),
+      });
     },
   });
 }
@@ -187,26 +241,6 @@ export function useDeleteProjectImage() {
   });
 }
 
-export function useUploadProjectPhoto() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      projectId,
-      formData,
-    }: {
-      projectId: number;
-      formData: FormData;
-    }) => projectsApi.uploadPhoto(projectId, formData),
-    onSuccess: project => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.projects.detail(project.id),
-      });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-    },
-  });
-}
-
 export function useSearchProjects(query: string, enabled = true) {
   return useQuery({
     queryKey: queryKeys.projects.search(query),
@@ -224,7 +258,7 @@ export function useCreateProjectWithImage(
   options: UseCreateProjectWithImageOptions = {}
 ) {
   const queryClient = useQueryClient();
-  const uploadPhoto = useUploadProjectPhoto();
+  const uploadImage = useUploadProjectImage();
 
   return useMutation({
     mutationFn: async ({
@@ -234,24 +268,41 @@ export function useCreateProjectWithImage(
       projectData: ProjectCreate;
       imageFile?: File;
     }) => {
+      // Step 1: Create the project
       const project = await projectsApi.create(projectData);
 
+      // Step 2: Upload image if provided (using the correct endpoint)
       if (imageFile) {
         const formData = new FormData();
-        formData.append('photo', imageFile);
-        await uploadPhoto.mutateAsync({
-          projectId: project.id,
-          formData,
-        });
+        // Important: The field name must be 'image' not 'photo'
+        formData.append('image', imageFile);
+
+        try {
+          await uploadImage.mutateAsync({
+            projectId: project.id,
+            formData,
+          });
+        } catch (error) {
+          console.error('Failed to upload project image:', error);
+          // Don't throw - project was created successfully
+          // Image upload is optional
+        }
       }
 
       return project;
     },
     onSuccess: project => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.allLists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(project.id),
+      });
       options.onSuccess?.(project);
     },
     onError: error => {
+      console.error('Failed to create project:', error);
       options.onError?.(error as Error);
     },
   });

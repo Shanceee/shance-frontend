@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 
-import PhoneIcon from '@/assets/phone.svg';
+import EmailIcon from '@/assets/email.svg';
 import LockIcon from '@/assets/lock.svg';
 import EyeIcon from '@/assets/eye.svg';
 import { useLogin } from '@/modules/auth';
@@ -37,7 +37,7 @@ export function LoginForm() {
         <div className="bg-[rgba(217,217,217,0.05)] flex gap-3 h-[58px] items-center justify-start px-5 py-2.5 relative rounded-[12px] w-full">
           <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
           <div className="relative shrink-0 size-[17.964px]">
-            <PhoneIcon className="block max-w-none size-full text-[#575757]" />
+            <EmailIcon className="block max-w-none size-full text-[#575757]" />
           </div>
           <div className="bg-[#575757] h-5 shrink-0 w-px" />
           <input
@@ -45,6 +45,7 @@ export function LoginForm() {
             {...register('email')}
             placeholder="Email"
             disabled={isPending}
+            autoComplete="email"
             className="font-unbounded font-medium text-[18px] leading-[24px] text-white bg-transparent border-none outline-none flex-1 placeholder:text-[#808080]"
           />
         </div>
@@ -69,6 +70,7 @@ export function LoginForm() {
               {...register('password')}
               placeholder="Пароль"
               disabled={isPending}
+              autoComplete="current-password"
               className="font-unbounded font-medium text-[18px] leading-[24px] text-white bg-transparent border-none outline-none flex-1 placeholder:text-[#808080]"
             />
           </div>
