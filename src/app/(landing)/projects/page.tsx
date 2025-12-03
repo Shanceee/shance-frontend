@@ -22,6 +22,7 @@ interface DisplayProject {
   tags: string[];
   stage?: string;
   status?: string;
+  teamSize?: string;
 }
 
 // Category mapping for filtering
@@ -44,6 +45,7 @@ function transformProject(project: Project): DisplayProject {
     tags: project.tags?.map(tag => tag.name) || [],
     stage: project.stage,
     status: project.status,
+    teamSize: project.team_capacity_label,
   };
 }
 
