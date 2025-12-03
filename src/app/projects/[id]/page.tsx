@@ -285,14 +285,7 @@ export default function ProjectDetailPage() {
 
                 {/* Counter Badge - Adjusted position for mobile */}
                 {images.length > 1 && (
-                  <div
-                    className="absolute bottom-3 left-3 md:bottom-6 md:left-6 px-4 py-2 md:px-5 md:py-2.5 bg-white/10 backdrop-blur-md font-miracode text-xs md:text-sm border"
-                    style={{
-                      borderRadius: '20px',
-                      borderImage:
-                        'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
-                    }}
-                  >
+                  <div className="absolute bottom-3 left-3 md:bottom-6 md:left-6 px-4 py-2 md:px-5 md:py-2.5 bg-white/10 backdrop-blur-md font-miracode text-xs md:text-sm border border-white/20 rounded-[20px]">
                     {currentImageIndex + 1} из {images.length}
                   </div>
                 )}
@@ -307,13 +300,7 @@ export default function ProjectDetailPage() {
                 <span className="text-[#A7A7A7] font-miracode text-xs md:text-sm">
                   Стадия
                 </span>
-                <div
-                  className="px-4 py-2 md:px-6 md:py-3 bg-white/5 backdrop-blur-sm border rounded-full font-unbounded text-xs md:text-sm"
-                  style={{
-                    borderImage:
-                      'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
-                  }}
-                >
+                <div className="px-4 py-2 md:px-6 md:py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-full font-unbounded text-xs md:text-sm">
                   {displayData.stage}
                 </div>
               </div>
@@ -323,13 +310,7 @@ export default function ProjectDetailPage() {
                 <span className="text-[#A7A7A7] font-miracode text-xs md:text-sm">
                   Статус
                 </span>
-                <div
-                  className="px-4 py-2 md:px-6 md:py-3 bg-white/5 backdrop-blur-sm border rounded-full font-unbounded text-xs md:text-sm"
-                  style={{
-                    borderImage:
-                      'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
-                  }}
-                >
+                <div className="px-4 py-2 md:px-6 md:py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-full font-unbounded text-xs md:text-sm">
                   {displayData.status}
                 </div>
               </div>
@@ -339,13 +320,7 @@ export default function ProjectDetailPage() {
                 <span className="text-[#A7A7A7] font-miracode text-xs md:text-sm">
                   Команда
                 </span>
-                <div
-                  className="px-4 py-2 md:px-6 md:py-3 bg-white/5 backdrop-blur-sm border rounded-full font-unbounded text-xs md:text-sm"
-                  style={{
-                    borderImage:
-                      'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
-                  }}
-                >
+                <div className="px-4 py-2 md:px-6 md:py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-full font-unbounded text-xs md:text-sm">
                   {displayData.teamSize}
                 </div>
               </div>
@@ -432,7 +407,7 @@ export default function ProjectDetailPage() {
             О чем наш проект
           </h2>
           <div
-            className={`max-w-3xl mx-auto backdrop-blur-sm rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 transition-all duration-1000 delay-200 border ${
+            className={`max-w-3xl mx-auto backdrop-blur-sm rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 transition-all duration-1000 delay-200 border border-white/20 ${
               isVisible
                 ? 'opacity-100 translate-y-0'
                 : 'opacity-0 translate-y-10'
@@ -440,8 +415,6 @@ export default function ProjectDetailPage() {
             style={{
               background:
                 'linear-gradient(229deg, rgba(35, 35, 35, 1) 0%, rgba(80, 186, 140, 0.3) 100%)',
-              borderImage:
-                'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
             }}
           >
             <p className="text-white font-montserrat text-base md:text-xl lg:text-2xl leading-relaxed">
@@ -468,13 +441,11 @@ export default function ProjectDetailPage() {
             {defaultAchievements.map((achievement, index) => (
               <div
                 key={achievement.id}
-                className="backdrop-blur-md rounded-2xl md:rounded-3xl p-5 md:p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105 group flex flex-col justify-between min-h-[180px] md:min-h-[220px] border"
+                className="backdrop-blur-md rounded-2xl md:rounded-3xl p-5 md:p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105 group flex flex-col justify-between min-h-[180px] md:min-h-[220px] border border-white/20"
                 style={{
                   transitionDelay: `${index * 100}ms`,
                   background:
                     'linear-gradient(229deg, rgba(35, 35, 35, 0.5) 0%, rgba(80, 186, 140, 0.1) 100%)',
-                  borderImage:
-                    'linear-gradient(109deg, rgba(179, 179, 179, 0.3) 0%, rgba(33, 33, 33, 0.1) 31%, rgba(52, 52, 52, 0.1) 69%, rgba(179, 179, 179, 0.3) 100%) 1',
                 }}
               >
                 <div>

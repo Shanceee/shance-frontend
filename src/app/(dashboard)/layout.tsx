@@ -7,7 +7,6 @@ import Link from 'next/link';
 
 import { useCurrentUser, useLogout } from '@/modules/auth';
 import { tokenManager } from '@/lib/api';
-import { getImageUrl } from '@/lib/utils';
 
 export default function DashboardLayout({
   children,
@@ -167,57 +166,33 @@ export default function DashboardLayout({
               </Link>
             </nav>
 
-            {/* User avatar and Settings dropdown */}
-            <div className="hidden md:flex items-center gap-3">
-              {/* User avatar */}
-              <Link href="/profile" className="relative w-9 h-9 rounded-full overflow-hidden hover:ring-2 hover:ring-[#00A851] transition-all">
-                {user.avatar ? (
-                  <Image
-                    src={getImageUrl(user.avatar)}
-                    alt={`${user.first_name || user.username || 'User'} avatar`}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#00A851] to-[#008f45] flex items-center justify-center">
-                    <span className="text-sm font-unbounded font-bold text-white">
-                      {user.first_name?.charAt(0) ||
-                        user.username?.charAt(0)?.toUpperCase() ||
-                        user.email?.charAt(0)?.toUpperCase() ||
-                        'U'}
-                    </span>
-                  </div>
-                )}
-              </Link>
-
-              {/* Settings dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                  className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300"
-                  aria-label="Settings"
+            {/* Settings dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300"
+                aria-label="Settings"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </button>
 
               {/* Settings dropdown menu */}
               {isSettingsOpen && (
@@ -266,7 +241,6 @@ export default function DashboardLayout({
                   </button>
                 </div>
               )}
-              </div>
             </div>
 
             {/* Mobile menu button */}

@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import { useCurrentUser } from '@/modules/auth';
 import { useUserProjects } from '@/modules/users';
-import { getImageUrl } from '@/lib/utils';
+import { getImageUrl, getProjectImageUrl } from '@/lib/utils';
 
 export default function ProfilePage() {
   const { data: user, isLoading: isLoadingUser } = useCurrentUser();
@@ -405,16 +405,15 @@ export default function ProfilePage() {
                         href={`/projects/${project.id}`}
                         className="bg-white/5 backdrop-blur-sm rounded-[20px] p-6 hover:bg-white/10 transition-all"
                       >
-                        {project.photo && (
-                          <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
-                            <Image
-                              src={project.photo}
-                              alt={project.title}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        )}
+                        <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
+                          <Image
+                            src={getProjectImageUrl(project)}
+                            alt={project.title}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
                         <h3 className="text-xl font-unbounded text-white mb-2">
                           {project.title}
                         </h3>
