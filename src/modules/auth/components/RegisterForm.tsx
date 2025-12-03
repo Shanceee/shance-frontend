@@ -30,7 +30,7 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#161419] relative overflow-x-hidden overflow-y-auto">
+    <div className="min-h-screen h-screen bg-[#161419] relative overflow-hidden">
       {/* Decorative blurred ellipses */}
       <div
         className="absolute w-[300px] h-[300px] sm:w-[488px] sm:h-[488px] rounded-full opacity-40 -right-[100px] sm:right-auto sm:left-[80%] lg:left-[1217px] -top-[25px]"
@@ -47,10 +47,10 @@ export function RegisterForm() {
         }}
       />
 
-      {/* Content container with proper mobile scrolling */}
-      <div className="relative flex flex-col items-center min-h-screen px-4 sm:px-6 py-8 sm:py-0">
+      {/* Content container */}
+      <div className="relative flex flex-col items-center justify-center h-full px-4 sm:px-6 py-2 sm:py-0">
         {/* Logo */}
-        <div className="w-[80px] h-[81px] sm:w-[100px] sm:h-[102px] mt-8 sm:mt-[101px] mb-6 sm:mb-8">
+        <div className="w-[50px] h-[51px] sm:w-[100px] sm:h-[102px] mb-2 sm:mb-8">
           <Image
             src="/images/logo.svg"
             width={100}
@@ -62,7 +62,7 @@ export function RegisterForm() {
         </div>
 
         {/* Main form container */}
-        <div className="w-full max-w-[456px] pb-8">
+        <div className="w-full max-w-[456px]">
           <div className="flex flex-col gap-3 items-start justify-center">
             {/* Header with title */}
             <div className="flex items-center justify-between px-4 sm:px-7 py-0 w-full">
@@ -72,14 +72,14 @@ export function RegisterForm() {
             </div>
 
             {/* Form Card */}
-            <div className="bg-[#202122] flex flex-col gap-[18px] sm:gap-[22px] items-center justify-center p-5 sm:p-[28px] rounded-[16px] sm:rounded-[20px] w-full">
+            <div className="bg-[#202122] flex flex-col gap-[12px] sm:gap-[22px] items-center justify-center p-4 sm:p-[28px] rounded-[16px] sm:rounded-[20px] w-full">
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="w-full flex flex-col gap-4 sm:gap-[22px] items-center"
+                className="w-full flex flex-col gap-2.5 sm:gap-[22px] items-center"
               >
                 {/* Email input */}
                 <div className="w-full">
-                  <div className="bg-[rgba(217,217,217,0.05)] flex gap-2 sm:gap-3 h-[50px] sm:h-[58px] items-center justify-start px-4 sm:px-5 py-2.5 relative rounded-[12px] w-full">
+                  <div className="bg-[rgba(217,217,217,0.05)] flex gap-2 sm:gap-3 h-[44px] sm:h-[58px] items-center justify-start px-4 sm:px-5 py-2 relative rounded-[12px] w-full">
                     <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
                     <div className="relative shrink-0 size-4 sm:size-[17.964px]">
                       <EmailIcon className="block max-w-none size-full text-[#575757]" />
@@ -103,7 +103,7 @@ export function RegisterForm() {
 
                 {/* Username input */}
                 <div className="w-full">
-                  <div className="bg-[rgba(217,217,217,0.05)] flex gap-2 sm:gap-3 h-[50px] sm:h-[58px] items-center justify-start px-4 sm:px-5 py-2.5 relative rounded-[12px] w-full">
+                  <div className="bg-[rgba(217,217,217,0.05)] flex gap-2 sm:gap-3 h-[44px] sm:h-[58px] items-center justify-start px-4 sm:px-5 py-2 relative rounded-[12px] w-full">
                     <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
                     <svg
                       className="shrink-0 relative size-4 sm:size-[18px]"
@@ -145,7 +145,7 @@ export function RegisterForm() {
 
                 {/* Password input */}
                 <div className="w-full">
-                  <div className="bg-[rgba(217,217,217,0.05)] flex h-[50px] sm:h-[58px] items-center justify-between px-4 sm:px-5 py-2.5 relative rounded-[12px] w-full">
+                  <div className="bg-[rgba(217,217,217,0.05)] flex h-[44px] sm:h-[58px] items-center justify-between px-4 sm:px-5 py-2 relative rounded-[12px] w-full">
                     <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
                     <div className="flex gap-2 sm:gap-3 items-center justify-start relative flex-1 min-w-0">
                       <div className="h-4 sm:h-5 relative shrink-0 w-4 sm:w-[16.667px]">
@@ -178,7 +178,7 @@ export function RegisterForm() {
 
                 {/* Password confirmation input */}
                 <div className="w-full">
-                  <div className="bg-[rgba(217,217,217,0.05)] flex h-[50px] sm:h-[58px] items-center justify-between px-4 sm:px-5 py-2.5 relative rounded-[12px] w-full">
+                  <div className="bg-[rgba(217,217,217,0.05)] flex h-[44px] sm:h-[58px] items-center justify-between px-4 sm:px-5 py-2 relative rounded-[12px] w-full">
                     <div className="absolute border border-[#adadad] border-solid inset-0 pointer-events-none rounded-[12px]" />
                     <div className="flex gap-2 sm:gap-3 items-center justify-start relative flex-1 min-w-0">
                       <div className="h-4 sm:h-5 relative shrink-0 w-4 sm:w-[16.667px]">
@@ -212,11 +212,11 @@ export function RegisterForm() {
                 </div>
 
                 {/* Submit button and privacy policy */}
-                <div className="flex flex-col gap-3 sm:gap-3.5 items-center justify-center relative shrink-0 w-full">
+                <div className="flex flex-col gap-2 sm:gap-3.5 items-center justify-center relative shrink-0 w-full">
                   <button
                     type="submit"
                     disabled={isPending}
-                    className="flex gap-2.5 h-[50px] sm:h-[58px] items-center justify-center overflow-clip px-6 sm:px-[52px] py-0 relative rounded-[12px] shrink-0 w-full bg-gradient-to-br from-[#232323] to-[#2f835e] hover:from-[#2f835e] hover:to-[#3a9e72] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                    className="flex gap-2.5 h-[44px] sm:h-[58px] items-center justify-center overflow-clip px-6 sm:px-[52px] py-0 relative rounded-[12px] shrink-0 w-full bg-gradient-to-br from-[#232323] to-[#2f835e] hover:from-[#2f835e] hover:to-[#3a9e72] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                   >
                     <span className="font-unbounded font-medium text-[#d8d8d8] text-[14px] sm:text-[18px] text-center">
                       {isPending ? 'Регистрация...' : 'Зарегистрироваться'}
